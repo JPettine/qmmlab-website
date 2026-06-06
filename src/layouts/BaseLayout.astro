@@ -11,11 +11,12 @@ const {
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/people/', label: 'People' },
   { href: '/research/', label: 'Research' },
+  { href: '/people/', label: 'Team' },
   { href: '/publications/', label: 'Publications' },
   { href: '/news/', label: 'News' },
   { href: '/contact/', label: 'Contact' },
+  { href: '/openings/', label: 'Openings' },
 ];
 ---
 
@@ -29,14 +30,19 @@ const navItems = [
     <title>{title}</title>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="QMM Lab home">
-        <span class="brand-mark" aria-hidden="true">Q</span>
-        <span>QMM Lab</span>
+    <header class="site-header" aria-label="QMM Lab site header">
+      <a class="site-banner" href="/" aria-label="QMM Lab home">
+        <img src="/banner_qmmlab.svg" alt="QMM Lab: Quantum Meta Matter Lab" />
       </a>
-      <nav class="site-nav" aria-label="Main navigation">
-        {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
-      </nav>
+
+      <div class="menu-bar">
+        <a class="university-brand" href="https://www.stonybrook.edu/" aria-label="Stony Brook University">
+          <img src="/stony-brook-logo.svg" alt="Stony Brook University" />
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+          {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+      </div>
     </header>
 
     <main>
@@ -44,7 +50,11 @@ const navItems = [
     </main>
 
     <footer class="site-footer">
-      <p>© {new Date().getFullYear()} QMM Lab. Built with Astro.</p>
+      <div>
+        <strong>QMM Lab</strong>
+        <p>Quantum Meta-Matter research group</p>
+      </div>
+      <p>© {new Date().getFullYear()} QMM Lab.</p>
     </footer>
   </body>
 </html>
@@ -52,13 +62,16 @@ const navItems = [
 <style is:global>
   :root {
     color-scheme: light;
-    --accent: #4158d0;
-    --accent-dark: #1f2f80;
+    --accent: #b5161f;
+    --accent-deep: #7d0d14;
+    --accent-soft: #fff3f4;
     --surface: #ffffff;
-    --text: #172033;
-    --muted: #5f6b7a;
-    --line: rgb(23 32 51 / 10%);
-    --shadow: 0 24px 80px rgb(31 47 128 / 14%);
+    --surface-warm: #fffafa;
+    --text: #171717;
+    --muted: #666666;
+    --line: #e6e1e1;
+    --shadow: 0 10px 28px rgb(125 13 20 / 8%);
+    --radius: 8px;
     font-family:
       Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
       "Segoe UI", sans-serif;
@@ -68,89 +81,123 @@ const navItems = [
     box-sizing: border-box;
   }
 
+  html {
+    overflow-x: hidden;
+    background: var(--surface);
+  }
+
   body {
     margin: 0;
+    min-width: 0;
     min-height: 100vh;
-    background:
-      radial-gradient(circle at top left, rgb(65 88 208 / 18%), transparent 32rem),
-      linear-gradient(135deg, #f7f9ff 0%, #eef4ff 100%);
+    overflow-x: hidden;
+    background: var(--surface);
     color: var(--text);
+  }
+
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
   }
 
   a {
     color: inherit;
   }
 
-  .site-header,
-  .site-footer,
-  main {
-    width: min(1120px, calc(100% - 3rem));
-    margin-inline: auto;
-  }
-
   .site-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding: 1.25rem 0;
+    width: 100%;
+    background: var(--surface);
   }
 
-  .brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--accent-dark);
-    font-weight: 800;
+  .site-banner {
+    display: block;
+    width: 100%;
+    line-height: 0;
     text-decoration: none;
   }
 
-  .brand-mark {
+  .site-banner img {
+    display: block;
+    width: 100%;
+  }
+
+  .menu-bar {
     display: grid;
-    width: 2.25rem;
-    height: 2.25rem;
-    place-items: center;
-    border-radius: 0.8rem;
-    background: var(--accent);
-    color: white;
+    grid-template-columns: minmax(180px, 330px) 1fr;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 2rem);
+    width: min(1180px, calc(100% - 2rem));
+    margin-inline: auto;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .university-brand {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    line-height: 0;
+  }
+
+  .university-brand img {
+    display: block;
+    width: min(100%, 330px);
+    max-height: 54px;
+    object-fit: contain;
+    object-position: left center;
   }
 
   .site-nav {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 0.35rem;
+    gap: 0.15rem;
+    min-width: 0;
   }
 
   .site-nav a {
-    border-radius: 999px;
-    padding: 0.65rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0.58rem 0.72rem;
     color: var(--muted);
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+    font-weight: 800;
     text-decoration: none;
+    white-space: nowrap;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease;
   }
 
   .site-nav a:hover,
   .site-nav a:focus-visible {
-    background: rgb(65 88 208 / 10%);
-    color: var(--accent-dark);
+    border-color: rgb(181 22 31 / 18%);
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+  }
+
+  .site-footer,
+  main {
+    width: min(1120px, calc(100% - 2rem));
+    margin-inline: auto;
   }
 
   main {
     display: grid;
-    gap: 2rem;
-    padding: 4rem 0;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding: clamp(1rem, 2vw, 1.5rem) 0 clamp(3rem, 8vw, 6rem);
   }
 
   .hero,
   .panel,
   .card {
     border: 1px solid var(--line);
-    border-radius: 28px;
-    background: rgb(255 255 255 / 78%);
+    border-radius: var(--radius);
+    background: var(--surface);
     box-shadow: var(--shadow);
-    backdrop-filter: blur(18px);
   }
 
   .hero {
@@ -163,10 +210,10 @@ const navItems = [
 
   .eyebrow {
     margin: 0 0 1rem;
-    color: var(--accent-dark);
-    font-size: 0.83rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
   }
 
@@ -181,11 +228,19 @@ const navItems = [
     margin-bottom: 1rem;
     font-size: clamp(3rem, 10vw, 6.5rem);
     line-height: 0.95;
+    letter-spacing: -0.07em;
   }
 
   h2 {
     margin-bottom: 1rem;
-    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-size: clamp(1.7rem, 4vw, 2.7rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+
+  h3 {
+    margin-bottom: 0.65rem;
+    letter-spacing: -0.025em;
   }
 
   .tagline,
@@ -196,7 +251,7 @@ const navItems = [
   }
 
   .tagline {
-    max-width: 44rem;
+    max-width: 48rem;
     font-size: clamp(1.1rem, 3vw, 1.5rem);
   }
 
@@ -213,19 +268,19 @@ const navItems = [
 
   .button,
   .actions a {
-    border-radius: 999px;
+    border-radius: 4px;
     padding: 0.85rem 1.2rem;
     background: var(--accent);
     color: white;
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
   }
 
   .button.secondary,
   .actions a:last-child {
     background: transparent;
-    color: var(--accent-dark);
-    box-shadow: inset 0 0 0 1px rgb(31 47 128 / 24%);
+    color: var(--accent-deep);
+    box-shadow: inset 0 0 0 1px rgb(181 22 31 / 24%);
   }
 
   .card-grid {
@@ -234,7 +289,7 @@ const navItems = [
   }
 
   .card {
-    padding: 1.3rem;
+    padding: 1.35rem;
   }
 
   .panel ul {
@@ -245,19 +300,52 @@ const navItems = [
   }
 
   .site-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
     padding: 2rem 0 3rem;
+    border-top: 1px solid var(--line);
     color: var(--muted);
     font-size: 0.95rem;
   }
 
-  @media (max-width: 760px) {
-    .site-header {
-      align-items: flex-start;
-      flex-direction: column;
+  .site-footer strong {
+    color: var(--accent);
+  }
+
+  .site-footer p {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 880px) {
+    .menu-bar {
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
     }
 
     .site-nav {
       justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .menu-bar,
+    .site-footer,
+    main {
+      width: min(100% - 1rem, 1120px);
+    }
+
+    .university-brand img {
+      max-height: 42px;
+    }
+
+    .site-nav a {
+      padding: 0.5rem 0.55rem;
+    }
+
+    .site-footer {
+      flex-direction: column;
     }
   }
 </style>
