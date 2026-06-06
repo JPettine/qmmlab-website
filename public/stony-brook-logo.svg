@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 108" role="img" aria-labelledby="title desc">
+  <title id="title">Stony Brook University</title>
+  <desc id="desc">Text-only Stony Brook University mark in red and black.</desc>
+  <rect width="520" height="108" fill="#fff"/>
+  <g font-family="Georgia, 'Times New Roman', serif" font-weight="700">
+    <text x="0" y="52" fill="#990000" font-size="45" letter-spacing="-.8">STONY BROOK</text>
+    <text x="3" y="86" fill="#111" font-size="24" letter-spacing="5.5">UNIVERSITY</text>
+  </g>
+  <rect x="0" y="96" width="380" height="4" fill="#990000"/>
+</svg>
