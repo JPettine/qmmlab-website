@@ -237,6 +237,7 @@ const highlightSlides = existsSync(highlightsDir)
     max-width: min(34vw, 13rem);
     max-height: 2.1rem;
     object-fit: contain;
+    transform: translateX(0.75in);
   }
 
   .site-nav {
@@ -244,6 +245,7 @@ const highlightSlides = existsSync(highlightsDir)
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.45rem;
+    transform: translateX(-0.5in);
   }
 
   .site-nav a {
@@ -271,8 +273,8 @@ const highlightSlides = existsSync(highlightsDir)
 
   .highlight-carousel {
     position: relative;
-    width: min(80vw, 1180px);
-    margin: 0.9rem auto 0;
+    width: min(1180px, calc(100% - 2rem));
+    margin: calc(0.9rem + 0.35in) auto 0;
     overflow: hidden;
     border-radius: 18px;
     background: #111111;
@@ -366,6 +368,7 @@ const highlightSlides = existsSync(highlightsDir)
   }
 
   main > * {
+    width: 100%;
     min-width: 0;
   }
 
