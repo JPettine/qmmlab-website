@@ -29,7 +29,36 @@ const navItems = [
     <title>{title}</title>
   </head>
   <body>
-    <div class="site-banner" role="img" aria-label="QMM Lab banner"></div>
+    <div class="site-banner" role="img" aria-label="QMM Lab banner" data-site-banner>
+      <span class="site-banner__fallback">QMM Lab</span>
+    </div>
+    <script is:inline>
+      const banner = document.querySelector('[data-site-banner]');
+      const bannerSources = [
+        '/QMMLab_Banner.png',
+        '/QMMLab_Banner.PNG',
+        '/assets/QMMLab_Banner.png',
+        '/assets/QMMLab_Banner.PNG',
+      ];
+
+      const loadBanner = (sources) => {
+        const [source, ...remainingSources] = sources;
+
+        if (!banner || !source) {
+          return;
+        }
+
+        const image = new Image();
+        image.onload = () => {
+          banner.style.backgroundImage = `url("${source}")`;
+          banner.classList.add('site-banner--loaded');
+        };
+        image.onerror = () => loadBanner(remainingSources);
+        image.src = source;
+      };
+
+      loadBanner(bannerSources);
+    </script>
 
     <header class="site-header">
       <a class="brand" href="/" aria-label="QMM Lab home">
@@ -90,10 +119,25 @@ const navItems = [
     height: clamp(8rem, 24vw, 18rem);
     overflow: hidden;
     background-color: #f7f9ff;
-    background-image: url("/QMMLab_Banner.png");
+    background-image: linear-gradient(135deg, #eef4ff 0%, #dfe8ff 100%);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+  }
+
+  .site-banner__fallback {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    color: var(--accent-dark);
+    font-size: clamp(2.25rem, 8vw, 6rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+  }
+
+  .site-banner--loaded .site-banner__fallback {
+    opacity: 0;
   }
 
   .site-header,
