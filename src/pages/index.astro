@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const siteTitle = 'QMM Lab';
+const tagline = 'A home for our research community, projects, publications, and lab updates.';
+---
+
+<BaseLayout title={siteTitle} description="QMM Lab research website homepage.">
+  <section class="hero" aria-labelledby="page-title">
+    <p class="eyebrow">Research Lab Website</p>
+    <h1 id="page-title">{siteTitle}</h1>
+    <p class="tagline">{tagline}</p>
+    <div class="actions" aria-label="Primary site sections">
+      <a href="/research/">Explore research</a>
+      <a href="/people/">Meet the lab</a>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="next-steps-title">
+    <h2 id="next-steps-title">Website foundation</h2>
+    <p class="lede">
+      This Astro site now has a reusable layout, navigation, and starter pages for the core lab sections.
+      Replace the placeholder copy with finalized lab content as it becomes available.
+    </p>
+    <div class="card-grid" aria-label="Core website sections">
+      <article class="card">
+        <h3>People</h3>
+        <p class="muted">Profiles for principal investigators, students, collaborators, and alumni.</p>
+      </article>
+      <article class="card">
+        <h3>Research</h3>
+        <p class="muted">Summaries of research themes, active projects, and lab capabilities.</p>
+      </article>
+      <article class="card">
+        <h3>Publications</h3>
+        <p class="muted">A curated list of papers, preprints, software, and datasets.</p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
