@@ -1,4 +1,7 @@
 ---
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 interface Props {
   title?: string;
   description?: string;
@@ -17,6 +20,36 @@ const navItems = [
   { href: '/contact/', label: 'Contact' },
   { href: '/openings/', label: 'Openings' },
 ];
+
+const highlightsDir = join(process.cwd(), 'public', 'highlights');
+const highlightImagePattern = /^image_(\d+)\.(?:png|jpe?g|webp|avif)$/i;
+const highlightSlides = existsSync(highlightsDir)
+  ? readdirSync(highlightsDir)
+      .map((fileName) => {
+        const match = fileName.match(highlightImagePattern);
+        if (!match) return null;
+
+        const slideNumber = match[1];
+        const textPath = join(highlightsDir, `text_${slideNumber}.txt`);
+        const textContent = existsSync(textPath)
+          ? readFileSync(textPath, 'utf8').trim()
+          : '';
+        const [summary = `Research highlight ${slideNumber}`, ...bodyParts] = textContent
+          .split(/\r?\n\r?\n|\r?\n/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        return {
+          number: Number(slideNumber),
+          image: `/highlights/${fileName}`,
+          summary,
+          description: bodyParts.join(' '),
+        };
+      })
+      .filter((slide): slide is { number: number; image: string; summary: string; description: string } => Boolean(slide))
+      .sort((a, b) => a.number - b.number)
+  : [];
+
 ---
 
 <!doctype html>
@@ -39,13 +72,47 @@ const navItems = [
 
     <header class="site-header" aria-label="QMM Lab site header">
       <a class="brand" href="/" aria-label="QMM Lab home">
-        <span class="brand-mark" aria-hidden="true">QMM</span>
-        <span class="brand-name">Lab</span>
+        <img
+          class="brand-logo"
+          src="/images/QMMLab_SBULogo.jpg"
+          alt="QMM Lab"
+          width="986"
+          height="158"
+        />
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
       </nav>
     </header>
+
+    {
+      highlightSlides.length > 0 && (
+        <section class="highlight-carousel" aria-label="Research highlights" data-highlight-carousel>
+          <div class="highlight-track">
+            {highlightSlides.map((slide) => (
+              <figure class="highlight-slide">
+                <img src={slide.image} alt={slide.summary} loading="eager" />
+                <figcaption class="highlight-caption">
+                  <strong>{slide.summary}</strong>
+                  {slide.description && <p>{slide.description}</p>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <div class="highlight-dots" aria-label="Highlight carousel position">
+            {highlightSlides.map((slide, index) => (
+              <button
+                type="button"
+                class:list={[index === 0 && 'is-active']}
+                aria-label={`Show highlight ${slide.number}`}
+                aria-current={index === 0 ? 'true' : 'false'}
+                data-highlight-dot={index}
+              />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     <main>
       <slot />
@@ -60,6 +127,37 @@ const navItems = [
     </footer>
   </body>
 </html>
+
+<script>
+  const carousels = document.querySelectorAll<HTMLElement>('[data-highlight-carousel]');
+
+  carousels.forEach((carousel) => {
+    const track = carousel.querySelector<HTMLElement>('.highlight-track');
+    const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('[data-highlight-dot]'));
+    const slideCount = dots.length;
+    let currentSlide = 0;
+
+    if (!track || slideCount < 2) return;
+
+    const showSlide = (slideIndex: number) => {
+      currentSlide = slideIndex;
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+      dots.forEach((dot, index) => {
+        const isActive = index === currentSlide;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+      });
+    };
+
+    const advanceSlide = () => showSlide((currentSlide + 1) % slideCount);
+    window.setInterval(advanceSlide, 5000);
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => showSlide(index));
+    });
+  });
+</script>
 
 <style is:global>
   :root {
@@ -106,7 +204,16 @@ const navItems = [
     color: inherit;
   }
 
-  .site-header,
+  img,
+  svg {
+    max-width: 100%;
+  }
+
+  .site-header {
+    width: calc(100% - 1rem);
+    margin-inline: auto;
+  }
+
   .site-footer,
   main {
     width: min(1180px, calc(100% - 2rem));
@@ -117,32 +224,25 @@ const navItems = [
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.1rem 0 0.9rem;
+    gap: 1.25rem;
+    padding: 0.35rem 0 0.3rem;
     border-bottom: 1px solid var(--line);
     background: var(--surface);
   }
 
   .brand {
     display: inline-flex;
-    align-items: baseline;
-    gap: 0.35rem;
-    color: var(--accent);
-    font-weight: 900;
-    letter-spacing: -0.05em;
+    margin-left: 0.5in;
     text-decoration: none;
   }
 
-  .brand-mark {
-    font-size: clamp(1.35rem, 4vw, 2rem);
-    line-height: 1;
-  }
-
-  .brand-name {
-    color: var(--text);
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0;
+  .brand-logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(34vw, 13rem);
+    max-height: 2.1rem;
+    object-fit: contain;
   }
 
   .site-nav {
@@ -155,9 +255,9 @@ const navItems = [
   .site-nav a {
     border: 1px solid transparent;
     border-radius: 999px;
-    padding: 0.68rem 0.95rem;
+    padding: 0.32rem 0.68rem;
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 800;
     text-decoration: none;
     transition:
@@ -173,10 +273,106 @@ const navItems = [
     color: var(--accent-deep);
   }
 
+
+
+  .highlight-carousel {
+    position: relative;
+    width: min(80vw, 1180px);
+    margin: 0.3in auto 0;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #111111;
+  }
+
+  .highlight-track {
+    display: flex;
+    transition: transform 520ms ease;
+  }
+
+  .highlight-slide {
+    position: relative;
+    flex: 0 0 100%;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 18px;
+    aspect-ratio: 16 / 7;
+    background: var(--line);
+  }
+
+  .highlight-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .highlight-caption {
+    position: absolute;
+    inset: 0 0 0 auto;
+    display: grid;
+    align-content: center;
+    width: 35%;
+    min-width: 16rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    border-radius: 18px;
+    background: rgb(0 0 0 / 65%);
+    color: #ffffff;
+    opacity: 0;
+    transform: translateX(0.75rem);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .highlight-carousel:hover .highlight-caption,
+  .highlight-carousel:focus-within .highlight-caption {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .highlight-caption strong {
+    display: block;
+    margin-bottom: 0.65rem;
+    font-size: clamp(1rem, 1.8vw, 1.35rem);
+    line-height: 1.2;
+  }
+
+  .highlight-caption p {
+    margin-bottom: 0;
+    line-height: 1.55;
+  }
+
+  .highlight-dots {
+    position: absolute;
+    right: 0;
+    bottom: 0.75rem;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .highlight-dots button {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 84%);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 24%);
+  }
+
+  .highlight-dots button.is-active {
+    background: #ffffff;
+  }
+
   main {
     display: grid;
     gap: clamp(2.5rem, 7vw, 5rem);
     padding: clamp(1.4rem, 4vw, 2.5rem) 0 clamp(3rem, 8vw, 6rem);
+  }
+
+  main > * {
+    min-width: 0;
   }
 
   .hero,
@@ -307,9 +503,31 @@ const navItems = [
   }
 
   @media (max-width: 760px) {
+
+    .highlight-carousel {
+      width: calc(100% - 2rem);
+    }
+
+    .highlight-slide {
+      aspect-ratio: 4 / 3;
+    }
+
+    .highlight-caption {
+      inset: auto 0 0;
+      width: 100%;
+      min-width: 0;
+      align-content: start;
+      border-radius: 18px 18px 0 0;
+      transform: translateY(0.75rem);
+    }
+
     .site-header {
       grid-template-columns: 1fr;
       align-items: flex-start;
+    }
+
+    .brand {
+      margin-left: 0;
     }
 
     .site-nav {
