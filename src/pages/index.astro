@@ -1,5 +1,5 @@
 ---
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
@@ -12,6 +12,36 @@ const [aboutTitle = 'A clean home for quantum meta-matter research', ...aboutPar
   .split(/\r?\n\r?\n/)
   .map((part) => part.trim())
   .filter(Boolean);
+
+
+const highlightsDir = join(process.cwd(), 'public', 'highlights');
+const highlightImagePattern = /^image_(\d+)\.(?:png|jpe?g|webp|avif)$/i;
+const highlightSlides = existsSync(highlightsDir)
+  ? readdirSync(highlightsDir)
+      .map((fileName) => {
+        const match = fileName.match(highlightImagePattern);
+        if (!match) return null;
+
+        const slideNumber = match[1];
+        const textPath = join(highlightsDir, `text_${slideNumber}.txt`);
+        const textContent = existsSync(textPath)
+          ? readFileSync(textPath, 'utf8').trim()
+          : '';
+        const [summary = `Research highlight ${slideNumber}`, ...bodyParts] = textContent
+          .split(/\r?\n\r?\n|\r?\n/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        return {
+          number: Number(slideNumber),
+          image: `/highlights/${fileName}`,
+          summary,
+          description: bodyParts.join(' '),
+        };
+      })
+      .filter((slide): slide is { number: number; image: string; summary: string; description: string } => Boolean(slide))
+      .sort((a, b) => a.number - b.number)
+  : [];
 
 const researchSlides = [
   {
@@ -43,6 +73,36 @@ const researchSlides = [
 ---
 
 <BaseLayout title="QMM Lab" description="Quantum Meta-Matter research group website.">
+
+
+  {
+    highlightSlides.length > 0 && (
+      <section class="highlight-carousel" aria-label="Research highlights" data-highlight-carousel>
+        <div class="highlight-track">
+          {highlightSlides.map((slide) => (
+            <figure class="highlight-slide">
+              <img src={slide.image} alt={slide.summary} loading="eager" />
+              <figcaption class="highlight-caption">
+                <strong>{slide.summary}</strong>
+                {slide.description && <p>{slide.description}</p>}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div class="highlight-dots" aria-label="Highlight carousel position">
+          {highlightSlides.map((slide, index) => (
+            <button
+              type="button"
+              class:list={[index === 0 && 'is-active']}
+              aria-label={`Show highlight ${slide.number}`}
+              aria-current={index === 0 ? 'true' : 'false'}
+              data-highlight-dot={index}
+            />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <section class="about-group" aria-labelledby="about-title">
     <p class="eyebrow">About the group</p>
@@ -86,7 +146,7 @@ const researchSlides = [
     <dl class="contact-list">
       <div>
         <dt>Email</dt>
-        <dd><a href="mailto:contact@qmmlab.example">contact@qmmlab.example</a></dd>
+        <dd><a href="mailto:jacob.pettine@stonybrook.edu">jacob.pettine@stonybrook.edu</a></dd>
       </div>
       <div>
         <dt>Location</dt>
@@ -114,7 +174,7 @@ const researchSlides = [
     max-width: 14ch;
     margin-bottom: 1rem;
     color: var(--accent);
-    font-size: clamp(2.4rem, 7vw, 5.5rem);
+    font-size: clamp(1.65rem, 4vw, 3rem);
     overflow-wrap: anywhere;
   }
 
