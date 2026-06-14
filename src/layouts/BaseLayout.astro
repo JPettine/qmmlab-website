@@ -29,9 +29,7 @@ const navItems = [
     <title>{title}</title>
   </head>
   <body>
-    <div class="site-banner" aria-label="QMM Lab banner">
-      <img src="/QMMLab_Banner.png" alt="QMM Lab banner" />
-    </div>
+    <div class="site-banner" role="img" aria-label="QMM Lab banner"></div>
 
     <header class="site-header">
       <a class="brand" href="/" aria-label="QMM Lab home">
@@ -89,17 +87,13 @@ const navItems = [
   .site-banner {
     width: 100%;
     max-width: 100vw;
-    overflow: hidden;
-    background: #f7f9ff;
-  }
-
-  .site-banner img {
-    display: block;
-    width: 100%;
-    max-width: 100%;
     height: clamp(8rem, 24vw, 18rem);
-    object-fit: cover;
-    object-position: center;
+    overflow: hidden;
+    background-color: #f7f9ff;
+    background-image: url("/QMMLab_Banner.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   .site-header,
