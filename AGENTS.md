@@ -37,6 +37,12 @@ This is an Astro-based research group website. The site should be clean, academi
 - Prefer refined academic/nano/quantum visual language.
 - Use responsive layouts that look good on desktop and mobile.
 
+## Asset / binary file rules
+
+- Do not modify, restore, replace, or commit binary assets unless explicitly requested.
+- If an image appears distorted, first fix the page markup or CSS to preserve the existing asset's intrinsic aspect ratio rather than changing the image file.
+- Before committing, check `git diff --stat` and ensure unintended binary file changes are reverted.
+
 ## Git / safety rules
 
 - Never delete files unless explicitly asked.
