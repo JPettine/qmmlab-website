@@ -39,8 +39,13 @@ const navItems = [
 
     <header class="site-header" aria-label="QMM Lab site header">
       <a class="brand" href="/" aria-label="QMM Lab home">
-        <span class="brand-mark" aria-hidden="true">QMM</span>
-        <span class="brand-name">Lab</span>
+        <img
+          class="brand-logo"
+          src="/images/QMMLab_SBULogo.jpg"
+          alt="QMM Lab"
+          width="986"
+          height="158"
+        />
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
@@ -106,7 +111,11 @@ const navItems = [
     color: inherit;
   }
 
-  .site-header,
+  .site-header {
+    width: calc(100% - 1rem);
+    margin-inline: auto;
+  }
+
   .site-footer,
   main {
     width: min(1180px, calc(100% - 2rem));
@@ -117,32 +126,24 @@ const navItems = [
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.1rem 0 0.9rem;
+    gap: 1.25rem;
+    padding: 0.35rem 0 0.3rem;
     border-bottom: 1px solid var(--line);
     background: var(--surface);
   }
 
   .brand {
     display: inline-flex;
-    align-items: baseline;
-    gap: 0.35rem;
-    color: var(--accent);
-    font-weight: 900;
-    letter-spacing: -0.05em;
     text-decoration: none;
   }
 
-  .brand-mark {
-    font-size: clamp(1.35rem, 4vw, 2rem);
-    line-height: 1;
-  }
-
-  .brand-name {
-    color: var(--text);
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0;
+  .brand-logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(34vw, 13rem);
+    max-height: 2.1rem;
+    object-fit: contain;
   }
 
   .site-nav {
@@ -155,9 +156,9 @@ const navItems = [
   .site-nav a {
     border: 1px solid transparent;
     border-radius: 999px;
-    padding: 0.68rem 0.95rem;
+    padding: 0.32rem 0.68rem;
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 800;
     text-decoration: none;
     transition:
