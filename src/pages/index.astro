@@ -1,5 +1,17 @@
 ---
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+
+const aboutPath = join(process.cwd(), 'public', 'about', 'about.txt');
+const aboutContent = existsSync(aboutPath)
+  ? readFileSync(aboutPath, 'utf8').trim()
+  : '';
+const [aboutTitle = 'A clean home for quantum meta-matter research', ...aboutParagraphs] = aboutContent
+  .split(/\r?\n\r?\n/)
+  .map((part) => part.trim())
+  .filter(Boolean);
 
 const researchSlides = [
   {
@@ -31,6 +43,15 @@ const researchSlides = [
 ---
 
 <BaseLayout title="QMM Lab" description="Quantum Meta-Matter research group website.">
+
+  <section class="about-group" aria-labelledby="about-title">
+    <p class="eyebrow">About the group</p>
+    <h1 id="about-title">{aboutTitle}</h1>
+    <div class="about-copy">
+      {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </section>
+
   <section class="banner" aria-labelledby="page-title">
     <div class="banner-copy">
       <p class="eyebrow">Quantum Meta-Matter</p>
@@ -104,26 +125,6 @@ const researchSlides = [
     </div>
   </section>
 
-  <section class="blurbs" aria-labelledby="about-title">
-    <div class="section-heading compact">
-      <p class="eyebrow">About the group</p>
-      <h2 id="about-title">A clean home for quantum meta-matter research</h2>
-    </div>
-    <div class="blurb-grid">
-      <article>
-        <h3>What we study</h3>
-        <p>QMM Lab explores quantum materials, engineered meta-structures, and the emergent matter phases that appear when geometry, interactions, and measurement meet.</p>
-      </article>
-      <article>
-        <h3>How we work</h3>
-        <p>The group combines theory, design, computation, and experiment-facing collaboration to build intuition across scales and identify testable signatures.</p>
-      </article>
-      <article>
-        <h3>Who should connect</h3>
-        <p>Students, researchers, and collaborators interested in quantum materials, metamaterials, condensed matter, and device-oriented discovery are encouraged to reach out.</p>
-      </article>
-    </div>
-  </section>
 
   <section class="logistics" aria-labelledby="logistics-title">
     <div>
@@ -149,9 +150,39 @@ const researchSlides = [
 </BaseLayout>
 
 <style>
+  .about-group {
+    max-width: 920px;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    background: #ffffff;
+    box-shadow: var(--shadow);
+  }
+
+  .about-group h1 {
+    max-width: 14ch;
+    margin-bottom: 1rem;
+    color: var(--accent);
+    font-size: clamp(2.4rem, 7vw, 5.5rem);
+    overflow-wrap: anywhere;
+  }
+
+  .about-copy {
+    display: grid;
+    gap: 1rem;
+    max-width: 760px;
+  }
+
+  .about-copy p {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    line-height: 1.7;
+  }
+
   .banner {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
     align-items: center;
     gap: clamp(2rem, 6vw, 5rem);
     min-height: clamp(420px, 65vh, 680px);
@@ -173,7 +204,9 @@ const researchSlides = [
   .banner h1 {
     margin: 0;
     color: var(--accent);
-    font-size: clamp(5rem, 16vw, 12rem);
+    max-width: 100%;
+    font-size: clamp(4rem, 14vw, 10rem);
+    overflow-wrap: anywhere;
     letter-spacing: -0.12em;
     text-transform: uppercase;
   }
@@ -183,6 +216,7 @@ const researchSlides = [
     gap: 0.28rem;
     margin-top: 0.5rem;
     color: var(--accent-deep);
+    max-width: 100%;
     font-size: clamp(1.35rem, 4vw, 2.6rem);
     font-weight: 300;
     letter-spacing: -0.035em;
@@ -193,16 +227,20 @@ const researchSlides = [
   }
 
   .acronym-cascade span:nth-child(2) {
-    transform: translateX(clamp(2rem, 7vw, 5.5rem));
+    transform: translateX(clamp(1rem, 5vw, 4rem));
   }
 
   .acronym-cascade span:nth-child(3) {
-    transform: translateX(clamp(4rem, 14vw, 11rem));
+    transform: translateX(clamp(2rem, 9vw, 7rem));
   }
 
   .acronym-cascade strong {
     color: var(--accent);
     font-weight: 950;
+  }
+
+  .banner > * {
+    min-width: 0;
   }
 
   .matter-graphic {
@@ -484,7 +522,7 @@ const researchSlides = [
     }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1060px) {
     .banner,
     .logistics {
       grid-template-columns: 1fr;

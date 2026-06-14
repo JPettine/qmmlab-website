@@ -365,6 +365,10 @@ const highlightSlides = existsSync(highlightsDir)
     padding: clamp(1.4rem, 4vw, 2.5rem) 0 clamp(3rem, 8vw, 6rem);
   }
 
+  main > * {
+    min-width: 0;
+  }
+
   .hero,
   .panel,
   .card {
@@ -514,6 +518,10 @@ const highlightSlides = existsSync(highlightsDir)
     .site-header {
       grid-template-columns: 1fr;
       align-items: flex-start;
+    }
+
+    .brand {
+      margin-left: 0;
     }
 
     .site-nav {

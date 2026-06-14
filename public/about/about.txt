@@ -1,0 +1,3 @@
+A clean home for quantum meta-matter research
+
+QMM Lab explores quantum materials, engineered meta-structures, and emergent matter phases that appear when geometry, interactions, and measurement meet. The group combines theory, design, computation, and experiment-facing collaboration to build intuition across scales and identify testable signatures.
