@@ -3,6 +3,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const publications = [
   {
+    title: 'Imaging a terahertz superfluid plasmon in a two-dimensional superconductor',
+    authors: 'Alexander von Hoegen, Tommy Tai, Clifford J. Allington, Matthew Yeung, Jacob Pettine, M. H. Michael, Emil Viñas Boström, Xiaomeng Cui, Kierstin Torres, Alexander E. Kossak, Byunghun Lee, Geoffrey S. D. Beach, G. D. Gu, Ángel Rubio, Philip Kim, and Nuh Gedik',
+    venue: 'Nature',
+    year: '2026',
+    link: 'https://doi.org/10.1038/s41586-025-10082-2',
+  },
+  {
     title: 'Light-driven nanoscale vectorial currents',
     authors: 'Jacob Pettine, Prashant Padmanabhan, Teng Shi, Lauren Gingras, Luke McClintock, Chun-Chieh Chang, Kevin W. C. Kwock, Long Yuan, Yue Huang, John Nogan, Jon K. Baldwin, Peter Adel, Ronald Holzwarth, Abul K. Azad, Filip Ronning, Antoinette J. Taylor, Rohit P. Prasankumar, Shi-Zeng Lin, and Hou-Tong Chen',
     venue: 'Nature',
@@ -80,13 +87,6 @@ const publications = [
     link: 'https://doi.org/10.1038/s41467-020-15115-0',
   },
   {
-    title: 'Toward Plasmonic Tunnel Gaps for Nanoscale Photoemission Currents by On-Chip Laser Ablation',
-    authors: 'Philipp Zimmermann, Alexander Hötger, Noelia Fernandez, Anna Nolinder, Jacob Pettine, Priscilla Choo, David J. Nesbitt, and Christoph Lienau',
-    venue: 'Nano Letters',
-    year: '2019',
-    link: 'https://doi.org/10.1021/acs.nanolett.8b04612',
-  },
-  {
     title: 'Polarization-Controlled Directional Multiphoton Photoemission from Hot Spots on Single Au Nanoshells',
     authors: 'Jacob Pettine, Andrej Grubisic, and David J. Nesbitt',
     venue: 'The Journal of Physical Chemistry C',
@@ -104,17 +104,11 @@ const publications = [
 ---
 
 <BaseLayout title="Publications | QMM Lab" description="Publications from QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">Publications</p>
-    <h1>Publications</h1>
-    <p class="tagline">Selected peer-reviewed publications from Jacob Pettine's Google Scholar profile with nonzero citation counts.</p>
-  </section>
   <section class="panel publications-panel">
     <div class="section-heading">
       <h2>Publication list</h2>
-      <p class="lede">14 Google Scholar-indexed publications with nonzero “Cited by” values.</p>
     </div>
-    <ol class="publication-list">
+    <ul class="publication-list">
       {publications.map((publication) => (
         <li class="publication-item">
           <a class="publication-title" href={publication.link} target="_blank" rel="noreferrer">
@@ -127,19 +121,17 @@ const publications = [
           </p>
         </li>
       ))}
-    </ol>
+    </ul>
   </section>
 </BaseLayout>
 
 <style>
   .publications-panel { display: grid; gap: 1.5rem; }
   .section-heading { max-width: 48rem; }
-  .publication-list { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; counter-reset: publications; }
-  .publication-item { counter-increment: publications; position: relative; padding: 1.2rem 1.2rem 1.2rem 4rem; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(135deg, var(--surface-warm), var(--surface)); }
-  .publication-item::before { content: counter(publications, decimal-leading-zero); position: absolute; left: 1.2rem; top: 1.2rem; color: var(--accent); font-weight: 900; letter-spacing: -0.04em; }
+  .publication-list { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+  .publication-item { padding: 1.2rem; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(135deg, var(--surface-warm), var(--surface)); }
   .publication-title { display: inline-block; margin-bottom: 0.55rem; color: var(--accent-deep); font-size: 1.08rem; font-weight: 850; line-height: 1.35; text-decoration-thickness: 0.08em; text-underline-offset: 0.2em; }
   .publication-authors { margin-bottom: 0.7rem; color: var(--muted); line-height: 1.65; }
   .publication-meta { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0; }
   .publication-meta span { border-radius: 999px; padding: 0.25rem 0.65rem; background: var(--accent-soft); color: var(--accent-deep); font-size: 0.82rem; font-weight: 800; }
-  @media (max-width: 640px) { .publication-item { padding: 3rem 1rem 1rem; } }
 </style>
