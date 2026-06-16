@@ -1,15 +1,137 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const publications = [
+  {
+    title: 'Imaging a terahertz superfluid plasmon in a two-dimensional superconductor',
+    authors: 'Alexander von Hoegen, Tommy Tai, Clifford J. Allington, Matthew Yeung, Jacob Pettine, M. H. Michael, Emil Viñas Boström, Xiaomeng Cui, Kierstin Torres, Alexander E. Kossak, Byunghun Lee, Geoffrey S. D. Beach, G. D. Gu, Ángel Rubio, Philip Kim, and Nuh Gedik',
+    venue: 'Nature',
+    year: '2026',
+    link: 'https://doi.org/10.1038/s41586-025-10082-2',
+  },
+  {
+    title: 'Light-driven nanoscale vectorial currents',
+    authors: 'Jacob Pettine, Prashant Padmanabhan, Teng Shi, Lauren Gingras, Luke McClintock, Chun-Chieh Chang, Kevin W. C. Kwock, Long Yuan, Yue Huang, John Nogan, Jon K. Baldwin, Peter Adel, Ronald Holzwarth, Abul K. Azad, Filip Ronning, Antoinette J. Taylor, Rohit P. Prasankumar, Shi-Zeng Lin, and Hou-Tong Chen',
+    venue: 'Nature',
+    year: '2024',
+    link: 'https://doi.org/10.1038/s41586-024-07037-4',
+  },
+  {
+    title: 'Ultrafast terahertz emission from emerging symmetry-broken materials',
+    authors: 'Jacob Pettine, Prashant Padmanabhan, Nicholas Sirica, Rohit P. Prasankumar, Antoinette J. Taylor, and Hou-Tong Chen',
+    venue: 'Light: Science & Applications',
+    year: '2023',
+    link: 'https://doi.org/10.1038/s41377-023-01163-w',
+  },
+  {
+    title: 'Energy-Resolved Femtosecond Hot Electron Dynamics in Single Plasmonic Nanoparticles',
+    authors: 'Jacob Pettine, Paolo Maioli, Fabrice Vallée, Natalia Del Fatti, and David J. Nesbitt',
+    venue: 'ACS Nano',
+    year: '2023',
+    link: 'https://doi.org/10.1021/acsnano.3c02062',
+  },
+  {
+    title: 'Making and breaking terahertz waves with fluid plasmas',
+    authors: 'Jacob Pettine and Hou-Tong Chen',
+    venue: 'Photonics Insights',
+    year: '2023',
+    link: 'https://doi.org/10.3788/PI.2023.C05',
+  },
+  {
+    title: 'Emerging Methods for Controlling Hot Carrier Excitation and Emission Distributions in Nanoplasmonic Systems',
+    authors: 'Jacob Pettine and David J. Nesbitt',
+    venue: 'The Journal of Physical Chemistry C',
+    year: '2022',
+    link: 'https://doi.org/10.1021/acs.jpcc.2c03425',
+  },
+  {
+    title: 'Regulating and Directionally Controlling Electron Emission from Gold Nanorods with Silica Coatings',
+    authors: 'Fabio Medeghini, Jacob Pettine, Sean M. Meyer, Catherine J. Murphy, and David J. Nesbitt',
+    venue: 'Nano Letters',
+    year: '2022',
+    link: 'https://doi.org/10.1021/acs.nanolett.1c03569',
+  },
+  {
+    title: 'Size Effects in Gold Nanorod Light-to-Heat Conversion under Femtosecond Illumination',
+    authors: 'Sean M. Meyer, Jacob Pettine, David J. Nesbitt, and Catherine J. Murphy',
+    venue: 'The Journal of Physical Chemistry C',
+    year: '2021',
+    link: 'https://doi.org/10.1021/acs.jpcc.1c03898',
+  },
+  {
+    title: 'Controlling the Spatial and Momentum Distributions of Plasmonic Carriers: Volume vs Surface Effects',
+    authors: 'Jacob Pettine, Sean M. Meyer, Fabio Medeghini, Catherine J. Murphy, and David J. Nesbitt',
+    venue: 'ACS Nano',
+    year: '2021',
+    link: 'https://doi.org/10.1021/acsnano.0c09045',
+  },
+  {
+    title: 'Self-adaptive amplified spontaneous emission suppression with a photorefractive two-beam coupling filter',
+    authors: 'Jacob Pettine, Miao Zhu, and Dana Z. Anderson',
+    venue: 'Optics Letters',
+    year: '2020',
+    link: 'https://doi.org/10.1364/OL.405174',
+  },
+  {
+    title: 'Continuous angular control over anisotropic photoemission from isotropic gold nanoshells',
+    authors: 'Jacob Pettine, Andrea Marton Menendez, and David J. Nesbitt',
+    venue: 'The Journal of Chemical Physics',
+    year: '2020',
+    link: 'https://doi.org/10.1063/5.0021099',
+  },
+  {
+    title: 'Plasmonic nanostar photocathodes for optically-controlled directional currents',
+    authors: 'Jacob Pettine, Priscilla Choo, Fabio Medeghini, Teri W. Odom, and David J. Nesbitt',
+    venue: 'Nature Communications',
+    year: '2020',
+    link: 'https://doi.org/10.1038/s41467-020-15115-0',
+  },
+  {
+    title: 'Polarization-Controlled Directional Multiphoton Photoemission from Hot Spots on Single Au Nanoshells',
+    authors: 'Jacob Pettine, Andrej Grubisic, and David J. Nesbitt',
+    venue: 'The Journal of Physical Chemistry C',
+    year: '2018',
+    link: 'https://doi.org/10.1021/acs.jpcc.8b03402',
+  },
+  {
+    title: 'Angle- and Momentum-Resolved Photoelectron Velocity Map Imaging Studies of Thin Au Film and Single Supported Au Nanoshells',
+    authors: 'Jacob Pettine, Andrej Grubisic, and David J. Nesbitt',
+    venue: 'The Journal of Physical Chemistry C',
+    year: '2018',
+    link: 'https://doi.org/10.1021/acs.jpcc.7b08446',
+  },
+];
 ---
 
-<BaseLayout title="Publications | QMM Lab" description="Publications, preprints, and outputs from QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">Publications</p>
-    <h1>Publications</h1>
-    <p class="tagline">Collect papers, preprints, conference contributions, software, and datasets in one place.</p>
-  </section>
-  <section class="panel">
-    <h2>Publication list coming soon</h2>
-    <p class="lede">Add citations manually or connect this page to a content collection as the bibliography grows.</p>
+<BaseLayout title="Publications | QMM Lab" description="Publications from QMM Lab.">
+  <section class="panel publications-panel">
+    <div class="section-heading">
+      <h2>Publication list</h2>
+    </div>
+    <ul class="publication-list">
+      {publications.map((publication) => (
+        <li class="publication-item">
+          <a class="publication-title" href={publication.link} target="_blank" rel="noreferrer">
+            {publication.title}
+          </a>
+          <p class="publication-authors">{publication.authors}</p>
+          <p class="publication-meta">
+            <span>{publication.venue}</span>
+            <span>{publication.year}</span>
+          </p>
+        </li>
+      ))}
+    </ul>
   </section>
 </BaseLayout>
+
+<style>
+  .publications-panel { display: grid; gap: 1.5rem; }
+  .section-heading { max-width: 48rem; }
+  .publication-list { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+  .publication-item { padding: 1.2rem; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(135deg, var(--surface-warm), var(--surface)); }
+  .publication-title { display: inline-block; margin-bottom: 0.55rem; color: var(--accent-deep); font-size: 1.08rem; font-weight: 850; line-height: 1.35; text-decoration-thickness: 0.08em; text-underline-offset: 0.2em; }
+  .publication-authors { margin-bottom: 0.7rem; color: var(--muted); line-height: 1.65; }
+  .publication-meta { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0; }
+  .publication-meta span { border-radius: 999px; padding: 0.25rem 0.65rem; background: var(--accent-soft); color: var(--accent-deep); font-size: 0.82rem; font-weight: 800; }
+</style>

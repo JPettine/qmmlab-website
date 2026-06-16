@@ -1,15 +1,147 @@
 ---
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { extname, join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const teamDir = join(process.cwd(), 'public', 'team');
+const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
+
+const formatName = (fileStem: string) => fileStem.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+const teamFiles = existsSync(teamDir) ? readdirSync(teamDir) : [];
+
+const teamMembers = teamFiles
+  .filter((fileName) => extname(fileName).toLowerCase() === '.txt')
+  .map((fileName) => {
+    const fileStem = parse(fileName).name;
+    const textPath = join(teamDir, fileName);
+    const [position = '', email = '', note = ''] = readFileSync(textPath, 'utf8')
+      .split(/\r?\n/)
+      .map((line) => line.trim());
+    const imageFile = teamFiles.find((candidate) => {
+      const parsed = parse(candidate);
+      return parsed.name === fileStem && imageExtensions.has(parsed.ext.toLowerCase());
+    });
+
+    return {
+      name: formatName(fileStem),
+      position,
+      email,
+      note,
+      image: imageFile ? `/team/${imageFile}` : '',
+    };
+  })
+  .sort((a, b) => a.name.localeCompare(b.name));
 ---
 
 <BaseLayout title="People | QMM Lab" description="People and collaborators in the QMM Lab.">
   <section class="hero">
     <p class="eyebrow">People</p>
     <h1>Meet the lab</h1>
-    <p class="tagline">Add profiles for principal investigators, students, postdocs, collaborators, and alumni.</p>
+    <p class="tagline">Add team member photos and profile text files to <code>public/team/</code> to update this list.</p>
   </section>
-  <section class="panel">
-    <h2>Profiles coming soon</h2>
-    <p class="lede">This page is ready for names, roles, bios, portraits, and links to personal pages or scholar profiles.</p>
+  <section class="panel team-panel">
+    <h2>Team</h2>
+    {teamMembers.length > 0 ? (
+      <div class="team-grid">
+        {teamMembers.map((member) => (
+          <article class="team-card">
+            <div class="team-photo-frame">
+              {member.image ? (
+                <img src={member.image} alt={`${member.name} headshot`} loading="lazy" />
+              ) : (
+                <div class="team-photo-placeholder" aria-hidden="true">{member.name.charAt(0)}</div>
+              )}
+            </div>
+            <div class="team-card-copy">
+              <h3>{member.name}</h3>
+              {member.position && <p class="team-position">{member.position}</p>}
+              {member.email && <a class="team-email" href={`mailto:${member.email}`}>{member.email}</a>}
+              {member.note && <p class="team-note">{member.note}</p>}
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="lede">Add files like <code>FirstnameLastname.jpg</code> and <code>FirstnameLastname.txt</code> to <code>public/team/</code>. Put position on the first line, email on the second line, and an optional note on the third line.</p>
+    )}
   </section>
 </BaseLayout>
+
+<style>
+  .team-panel {
+    display: grid;
+    gap: 1.4rem;
+  }
+
+  code {
+    border-radius: 0.35rem;
+    padding: 0.08rem 0.32rem;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    font-size: 0.9em;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .team-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: linear-gradient(180deg, var(--surface-warm), var(--surface));
+  }
+
+  .team-photo-frame {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--accent-soft);
+  }
+
+  .team-photo-frame img,
+  .team-photo-placeholder {
+    width: 100%;
+    height: 100%;
+  }
+
+  .team-photo-frame img {
+    display: block;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .team-photo-placeholder {
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    font-size: 4rem;
+    font-weight: 900;
+  }
+
+  .team-card-copy {
+    display: grid;
+    gap: 0.45rem;
+    padding: 1rem;
+  }
+
+  .team-card h3,
+  .team-card p {
+    margin-bottom: 0;
+  }
+
+  .team-position,
+  .team-note {
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .team-email {
+    color: var(--accent-deep);
+    font-weight: 800;
+    text-decoration-color: rgb(181 22 31 / 28%);
+    text-underline-offset: 0.2em;
+  }
+</style>
