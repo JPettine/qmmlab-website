@@ -15,9 +15,22 @@ const teamMembers = teamFiles
   .map((fileName) => {
     const fileStem = parse(fileName).name;
     const textPath = join(teamDir, fileName);
-    const [position = '', email = '', note = ''] = readFileSync(textPath, 'utf8')
+    const [position = '', email = '', ...detailLines] = readFileSync(textPath, 'utf8')
       .split(/\r?\n/)
-      .map((line) => line.trim());
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const profileLinks = detailLines
+      .filter((line) => /^https?:\/\//i.test(line))
+      .map((url) => {
+        const lowerUrl = url.toLowerCase();
+        if (lowerUrl.includes('scholar.google.com')) return { url, label: 'Google Scholar', icon: 'G' };
+        if (lowerUrl.includes('linkedin.com')) return { url, label: 'LinkedIn', icon: 'in' };
+        if (lowerUrl.includes('instagram.com')) return { url, label: 'Instagram', icon: 'ig' };
+        if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) return { url, label: 'X', icon: '𝕏' };
+        return null;
+      })
+      .filter((link): link is { url: string; label: string; icon: string } => Boolean(link));
+    const note = detailLines.filter((line) => !/^https?:\/\//i.test(line)).join(' ');
     const imageFile = teamFiles.find((candidate) => {
       const parsed = parse(candidate);
       return parsed.name === fileStem && imageExtensions.has(parsed.ext.toLowerCase());
@@ -28,6 +41,7 @@ const teamMembers = teamFiles
       position,
       email,
       note,
+      profileLinks,
       image: imageFile ? `/team/${imageFile}` : '',
     };
   })
@@ -55,6 +69,15 @@ const teamMembers = teamFiles
               <h3>{member.name}</h3>
               {member.position && <p class="team-position">{member.position}</p>}
               {member.email && <a class="team-email" href={`mailto:${member.email}`}>{member.email}</a>}
+              {member.profileLinks.length > 0 && (
+                <div class="profile-links" aria-label={`${member.name} profile links`}>
+                  {member.profileLinks.map((link) => (
+                    <a class="profile-link" href={link.url} aria-label={link.label} title={link.label} target="_blank" rel="noreferrer">
+                      <span>{link.icon}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
               {member.note && <p class="team-note">{member.note}</p>}
               </div>
             </article>
@@ -149,6 +172,34 @@ const teamMembers = teamFiles
   .team-note {
     color: var(--muted);
     line-height: 1.55;
+  }
+
+
+  .profile-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .profile-link {
+    display: inline-grid;
+    width: 1.55rem;
+    height: 1.55rem;
+    place-items: center;
+    border: 1px solid rgb(181 22 31 / 18%);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--accent-deep);
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .profile-link:hover,
+  .profile-link:focus-visible {
+    background: var(--accent-soft);
+    color: var(--accent);
   }
 
   .team-email {
