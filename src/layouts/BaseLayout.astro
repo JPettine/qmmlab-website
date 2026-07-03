@@ -2,22 +2,33 @@
 interface Props {
   title?: string;
   description?: string;
+  bodyClass?: string;
 }
 
 const {
   title = 'QMM Lab',
   description = 'Research lab website for QMM Lab.',
+  bodyClass,
 } = Astro.props;
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/research/', label: 'Research' },
+  {
+    href: '/research/',
+    label: 'Research',
+    children: [
+      { href: '/research/#directions', label: 'Directions' },
+      { href: '/research/#techniques', label: 'Techniques' },
+    ],
+  },
   { href: '/people/', label: 'Team' },
   { href: '/publications/', label: 'Publications' },
   { href: '/news/', label: 'News' },
   { href: '/contact/', label: 'Contact' },
-  { href: '/openings/', label: 'Openings' },
 ];
+
+const currentPath = Astro.url.pathname;
+const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 ---
 
 <!doctype html>
@@ -29,7 +40,7 @@ const navItems = [
     <meta name="description" content={description} />
     <title>{title}</title>
   </head>
-  <body>
+  <body class={bodyClass}>
     <img
       class="site-banner-image"
       src="/images/QMMLab_Banner.png"
@@ -49,7 +60,22 @@ const navItems = [
         />
       </a>
       <nav class="site-nav" aria-label="Main navigation">
-        {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+        {navItems.map((item) => (
+          item.children ? (
+            <div class="nav-menu">
+              <a href={item.href} class:list={[isActiveHref(item.href) && 'is-active']} aria-current={isActiveHref(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+              <div class="nav-dropdown" aria-label={`${item.label} sections`}>
+                {item.children.map((child) => <a href={child.href}>{child.label}</a>)}
+              </div>
+            </div>
+          ) : (
+            <a href={item.href} class:list={[isActiveHref(item.href) && 'is-active']} aria-current={isActiveHref(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          )
+        ))}
       </nav>
     </header>
 
@@ -188,7 +214,12 @@ const navItems = [
     transform: translateX(-0.5in);
   }
 
+  .nav-menu {
+    position: relative;
+  }
+
   .site-nav a {
+    display: inline-flex;
     border: 1px solid transparent;
     border-radius: 999px;
     padding: 0.32rem 0.68rem;
@@ -202,6 +233,10 @@ const navItems = [
       color 160ms ease;
   }
 
+  .site-nav a.is-active {
+    color: var(--accent);
+  }
+
   .site-nav a:hover,
   .site-nav a:focus-visible {
     border-color: rgb(181 22 31 / 18%);
@@ -209,7 +244,41 @@ const navItems = [
     color: var(--accent-deep);
   }
 
+  .nav-dropdown {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 50%;
+    z-index: 10;
+    display: grid;
+    min-width: 10rem;
+    padding: 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -0.3rem);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
 
+  .nav-menu:hover .nav-dropdown,
+  .nav-menu:focus-within .nav-dropdown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+
+  .nav-dropdown a {
+    justify-content: flex-start;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .highlight-section {
+    display: grid;
+    gap: 1.5rem;
+  }
 
   .highlight-carousel {
     position: relative;
@@ -468,6 +537,17 @@ const navItems = [
 
     .site-nav {
       justify-content: flex-start;
+      transform: none;
+    }
+
+    .nav-dropdown {
+      left: 0;
+      transform: translateY(-0.3rem);
+    }
+
+    .nav-menu:hover .nav-dropdown,
+    .nav-menu:focus-within .nav-dropdown {
+      transform: translateY(0);
     }
 
     .site-footer {

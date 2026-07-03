@@ -1,15 +1,84 @@
 ---
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { extname, join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const newsDir = join(process.cwd(), 'public', 'news');
+
+const newsPosts = existsSync(newsDir)
+  ? readdirSync(newsDir)
+      .filter((fileName) => extname(fileName).toLowerCase() === '.txt')
+      .map((fileName) => {
+        const lines = readFileSync(join(newsDir, fileName), 'utf8')
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+        const [snippet = parse(fileName).name, ...bodyLines] = lines;
+
+        return {
+          slug: parse(fileName).name,
+          snippet,
+          body: bodyLines,
+        };
+      })
+      .sort((a, b) => b.slug.localeCompare(a.slug))
+  : [];
 ---
 
 <BaseLayout title="News | QMM Lab" description="News and updates from QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">News</p>
-    <h1>Lab updates</h1>
-    <p class="tagline">Share announcements, awards, publications, events, and recruiting updates.</p>
-  </section>
-  <section class="panel">
-    <h2>Updates coming soon</h2>
-    <p class="lede">This page can later become a blog-style archive powered by Astro content collections.</p>
+  <section class="news-section" aria-labelledby="news-title">
+    <div class="section-heading">
+      <p class="eyebrow" id="news-title">News</p>
+    </div>
+    <div class="panel news-panel">
+      {newsPosts.length > 0 ? (
+        <div class="news-list">
+          {newsPosts.map((post) => (
+            <article class="news-post" id={post.slug}>
+              <h2>{post.snippet}</h2>
+              {post.body.length > 0 ? (
+                post.body.map((paragraph) => <p>{paragraph}</p>)
+              ) : (
+                <p class="lede">Full posting coming soon.</p>
+              )}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="lede">Add news posts as <code>.txt</code> files in <code>public/news/</code>. The first line becomes the homepage snippet; subsequent lines become the full News page posting.</p>
+      )}
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .news-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .section-heading {
+    max-width: 760px;
+  }
+
+  .news-panel,
+  .news-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .news-post {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .news-post:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .news-post p {
+    color: var(--muted);
+    line-height: 1.7;
+  }
+</style>

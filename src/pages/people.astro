@@ -8,6 +8,20 @@ const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
 
 const formatName = (fileStem: string) => fileStem.replace(/([a-z])([A-Z])/g, '$1 $2');
 
+const getSocialLink = (line: string) => {
+  if (!/^https?:\/\//i.test(line)) return null;
+
+  const lowerLine = line.toLowerCase();
+
+  if (lowerLine.includes('scholar.google.com')) return { platform: 'Google Scholar', symbol: 'G', url: line };
+  if (lowerLine.includes('linkedin.com')) return { platform: 'LinkedIn', symbol: 'in', url: line };
+  if (lowerLine.includes('instagram.com')) return { platform: 'Instagram', symbol: '◎', url: line };
+  if (lowerLine.includes('x.com') || lowerLine.includes('twitter.com')) return { platform: 'X', symbol: '𝕏', url: line };
+  if (lowerLine.includes('github.com')) return { platform: 'GitHub', symbol: 'GH', url: line };
+
+  return { platform: 'Profile link', symbol: '↗', url: line };
+};
+
 const teamFiles = existsSync(teamDir) ? readdirSync(teamDir) : [];
 
 const teamMembers = teamFiles
@@ -15,9 +29,12 @@ const teamMembers = teamFiles
   .map((fileName) => {
     const fileStem = parse(fileName).name;
     const textPath = join(teamDir, fileName);
-    const [position = '', email = '', note = ''] = readFileSync(textPath, 'utf8')
+    const [position = '', email = '', ...extraLines] = readFileSync(textPath, 'utf8')
       .split(/\r?\n/)
-      .map((line) => line.trim());
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const socialLinks = extraLines.map(getSocialLink).filter((link): link is { platform: string; symbol: string; url: string } => Boolean(link));
+    const note = extraLines.find((line) => !getSocialLink(line)) ?? '';
     const imageFile = teamFiles.find((candidate) => {
       const parsed = parse(candidate);
       return parsed.name === fileStem && imageExtensions.has(parsed.ext.toLowerCase());
@@ -28,6 +45,7 @@ const teamMembers = teamFiles
       position,
       email,
       note,
+      socialLinks,
       image: imageFile ? `/team/${imageFile}` : '',
     };
   })
@@ -35,40 +53,57 @@ const teamMembers = teamFiles
 ---
 
 <BaseLayout title="People | QMM Lab" description="People and collaborators in the QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">People</p>
-    <h1>Meet the lab</h1>
-    <p class="tagline">Add team member photos and profile text files to <code>public/team/</code> to update this list.</p>
-  </section>
-  <section class="panel team-panel">
-    <h2>Team</h2>
-    {teamMembers.length > 0 ? (
-      <div class="team-grid">
-        {teamMembers.map((member) => (
-          <article class="team-card">
-            <div class="team-photo-frame">
-              {member.image ? (
-                <img src={member.image} alt={`${member.name} headshot`} loading="lazy" />
-              ) : (
-                <div class="team-photo-placeholder" aria-hidden="true">{member.name.charAt(0)}</div>
-              )}
-            </div>
-            <div class="team-card-copy">
-              <h3>{member.name}</h3>
-              {member.position && <p class="team-position">{member.position}</p>}
-              {member.email && <a class="team-email" href={`mailto:${member.email}`}>{member.email}</a>}
-              {member.note && <p class="team-note">{member.note}</p>}
-            </div>
-          </article>
-        ))}
-      </div>
-    ) : (
-      <p class="lede">Add files like <code>FirstnameLastname.jpg</code> and <code>FirstnameLastname.txt</code> to <code>public/team/</code>. Put position on the first line, email on the second line, and an optional note on the third line.</p>
-    )}
+  <section class="team-section" aria-labelledby="current-members-title">
+    <div class="section-heading">
+      <p class="eyebrow" id="current-members-title">Current Members</p>
+    </div>
+    <div class="panel team-panel">
+      {teamMembers.length > 0 ? (
+        <div class="team-grid">
+          {teamMembers.map((member) => (
+            <article class="team-card">
+              <div class="team-photo-frame">
+                {member.image ? (
+                  <img src={member.image} alt={`${member.name} headshot`} loading="lazy" />
+                ) : (
+                  <div class="team-photo-placeholder" aria-hidden="true">{member.name.charAt(0)}</div>
+                )}
+              </div>
+              <div class="team-card-copy">
+                <h3>{member.name}</h3>
+                {member.position && <p class="team-position">{member.position}</p>}
+                {member.email && <a class="team-email" href={`mailto:${member.email}`}>{member.email}</a>}
+                {member.socialLinks.length > 0 && (
+                  <div class="team-social-links" aria-label={`${member.name} profile links`}>
+                    {member.socialLinks.map((link) => (
+                      <a href={link.url} target="_blank" rel="noreferrer" aria-label={`${member.name} ${link.platform}`} title={link.platform}>
+                        {link.symbol}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {member.note && <p class="team-note">{member.note}</p>}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="lede">Add files like <code>FirstnameLastname.jpg</code> and <code>FirstnameLastname.txt</code> to <code>public/team/</code>. Put position on the first line, email on the second line, and an optional note on the third line.</p>
+      )}
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  .team-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .section-heading {
+    max-width: 760px;
+  }
+
   .team-panel {
     display: grid;
     gap: 1.4rem;
@@ -84,20 +119,25 @@ const teamMembers = teamFiles
 
   .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(1.5rem, 4vw, 2.5rem);
   }
 
   .team-card {
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1.2rem;
     border: 1px solid var(--line);
     border-radius: 24px;
+    padding: 1rem;
     background: linear-gradient(180deg, var(--surface-warm), var(--surface));
   }
 
   .team-photo-frame {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1;
     overflow: hidden;
+    border-radius: 18px;
     background: var(--accent-soft);
   }
 
@@ -124,7 +164,7 @@ const teamMembers = teamFiles
   .team-card-copy {
     display: grid;
     gap: 0.45rem;
-    padding: 1rem;
+    padding: 0;
   }
 
   .team-card h3,
@@ -143,5 +183,42 @@ const teamMembers = teamFiles
     font-weight: 800;
     text-decoration-color: rgb(181 22 31 / 28%);
     text-underline-offset: 0.2em;
+  }
+
+  .team-social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .team-social-links a {
+    display: inline-grid;
+    width: 1.7rem;
+    height: 1.7rem;
+    place-items: center;
+    border: 1px solid rgb(181 22 31 / 18%);
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .team-social-links a:hover,
+  .team-social-links a:focus-visible {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  @media (max-width: 520px) {
+    .team-card {
+      grid-template-columns: 1fr;
+    }
+
+    .team-photo-frame {
+      width: 6.5rem;
+    }
   }
 </style>

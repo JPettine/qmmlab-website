@@ -3,13 +3,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Research | QMM Lab" description="Research themes and projects from QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">Research</p>
-    <h1>Research areas</h1>
-    <p class="tagline">Describe the lab's major research themes, active projects, methods, and collaborations.</p>
+  <section class="research-section" aria-labelledby="directions-title" id="directions">
+    <div class="section-heading">
+      <p class="eyebrow" id="directions-title">Directions</p>
+    </div>
+    <div class="panel">
+      <h1>Research areas</h1>
+      <p class="tagline">Describe the lab's major research themes, active projects, methods, and collaborations.</p>
+    </div>
   </section>
-  <section class="panel">
-    <h2>Project summaries coming soon</h2>
-    <p class="lede">Use this page for concise research area cards, project pages, figures, and links to related publications.</p>
+
+  <section class="research-section" aria-labelledby="techniques-title" id="techniques">
+    <div class="section-heading">
+      <p class="eyebrow" id="techniques-title">Techniques</p>
+    </div>
+    <div class="panel">
+      <h2>Project summaries coming soon</h2>
+      <p class="lede">Use this page for concise research area cards, project pages, figures, and links to related publications.</p>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .research-section {
+    display: grid;
+    gap: 1.5rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .section-heading {
+    max-width: 760px;
+  }
+</style>

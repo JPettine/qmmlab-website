@@ -3,13 +3,124 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Contact | QMM Lab" description="Contact and recruiting information for QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">Contact</p>
-    <h1>Contact QMM Lab</h1>
-    <p class="tagline">Add the lab's location, email, recruiting notes, and preferred contact channels.</p>
+  <section class="contact-section" aria-labelledby="openings-title">
+    <div class="section-heading">
+      <p class="eyebrow" id="openings-title">Openings</p>
+    </div>
+    <div class="panel openings-panel">
+      <h2>Join QMM Lab</h2>
+      <p class="lede">Prospective students, postdocs, staff, and collaborators interested in quantum meta-matter research are encouraged to reach out by email with a brief description of their interests.</p>
+    </div>
   </section>
-  <section class="panel">
-    <h2>Contact details coming soon</h2>
-    <p class="lede">Include mailing address, campus location, application guidance, and links to relevant institutional pages.</p>
+
+  <section class="contact-section" aria-labelledby="contact-title">
+    <div class="section-heading">
+      <p class="eyebrow" id="contact-title">Contact</p>
+    </div>
+    <div class="panel contact-panel">
+      <p class="tagline">For lab inquiries, recruiting questions, and visitor information, contact Jacob Pettine directly.</p>
+      <dl class="contact-list">
+        <div>
+          <dt>Email</dt>
+          <dd><a href="mailto:jacob.pettine@stonybrook.edu">jacob.pettine@stonybrook.edu</a></dd>
+        </div>
+        <div>
+          <dt>Location</dt>
+          <dd>Stony Brook University, Stony Brook, NY</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="contact-section" aria-labelledby="map-title">
+    <div class="section-heading">
+      <p class="eyebrow" id="map-title">Map</p>
+    </div>
+    <div class="panel map-panel">
+      <iframe
+        title="Google Map showing Stony Brook University"
+        src="https://www.google.com/maps?q=Stony%20Brook%20University%2C%20Stony%20Brook%2C%20NY&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen>
+      </iframe>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .contact-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .section-heading {
+    max-width: 760px;
+  }
+
+  .openings-panel,
+  .contact-panel {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .contact-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.75fr);
+    align-items: start;
+  }
+
+  .contact-list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .contact-list div {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .contact-list div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .contact-list dt {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .contact-list dd {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .contact-list a {
+    color: var(--accent-deep);
+    font-weight: 800;
+    text-decoration-color: rgb(181 22 31 / 28%);
+    text-underline-offset: 0.2em;
+  }
+
+  .map-panel {
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .map-panel iframe {
+    display: block;
+    width: 100%;
+    min-height: min(70vh, 480px);
+    border: 0;
+  }
+
+  @media (max-width: 760px) {
+    .contact-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
