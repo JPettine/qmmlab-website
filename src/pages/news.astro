@@ -1,15 +1,88 @@
 ---
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const newsDir = join(process.cwd(), 'public', 'news');
+const newsItems = existsSync(newsDir)
+  ? readdirSync(newsDir)
+      .filter((fileName) => fileName.toLowerCase().endsWith('.txt'))
+      .map((fileName) => {
+        const [snippet = '', ...bodyLines] = readFileSync(join(newsDir, fileName), 'utf8')
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        return {
+          id: parse(fileName).name,
+          snippet,
+          body: bodyLines.join('\n'),
+        };
+      })
+      .filter((item) => item.snippet)
+      .sort((a, b) => b.id.localeCompare(a.id))
+  : [];
 ---
 
 <BaseLayout title="News | QMM Lab" description="News and updates from QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">News</p>
-    <h1>Lab updates</h1>
-    <p class="tagline">Share announcements, awards, publications, events, and recruiting updates.</p>
-  </section>
-  <section class="panel">
-    <h2>Updates coming soon</h2>
-    <p class="lede">This page can later become a blog-style archive powered by Astro content collections.</p>
+  <section class="news-section" aria-labelledby="news-archive-title">
+    <div class="section-heading">
+      <p class="eyebrow" id="news-archive-title">Lab News</p>
+    </div>
+    <div class="panel news-panel">
+      {newsItems.length > 0 ? (
+        <div class="news-list">
+          {newsItems.map((item) => (
+            <article class="news-entry">
+              <h2>{item.snippet}</h2>
+              {item.body && item.body.split('\n').map((paragraph) => <p>{paragraph}</p>)}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="lede">Add <code>.txt</code> files to <code>public/news/</code>. The first line appears as the Home page snippet; subsequent lines appear as the full News page post.</p>
+      )}
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .news-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .news-panel,
+  .news-list {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .news-entry {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.25rem;
+  }
+
+  .news-entry:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .news-entry h2 {
+    color: var(--accent);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+  }
+
+  .news-entry p {
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  code {
+    border-radius: 0.35rem;
+    padding: 0.08rem 0.32rem;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    font-size: 0.9em;
+  }
+</style>

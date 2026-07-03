@@ -5,6 +5,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const teamDir = join(process.cwd(), 'public', 'team');
 const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
+const pdfExtensions = new Set(['.pdf']);
+
+const imagesDir = join(process.cwd(), 'public', 'images');
+const imageFiles = existsSync(imagesDir) ? readdirSync(imagesDir) : [];
+const findIcon = (stem: string) => {
+  const iconFile = imageFiles.find((fileName) => parse(fileName).name === stem);
+  return iconFile ? `/images/${iconFile}` : '';
+};
+
+const profileIconByLabel = {
+  'Google Scholar': findIcon('Icon_Scholar'),
+  LinkedIn: findIcon('Icon_LinkedIn'),
+  Instagram: findIcon('Icon_Instagram'),
+  X: findIcon('Icon_X'),
+};
 
 const formatName = (fileStem: string) => fileStem.replace(/([a-z])([A-Z])/g, '$1 $2');
 
@@ -15,12 +30,29 @@ const teamMembers = teamFiles
   .map((fileName) => {
     const fileStem = parse(fileName).name;
     const textPath = join(teamDir, fileName);
-    const [position = '', email = '', note = ''] = readFileSync(textPath, 'utf8')
+    const [position = '', email = '', ...detailLines] = readFileSync(textPath, 'utf8')
       .split(/\r?\n/)
-      .map((line) => line.trim());
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const profileLinks = detailLines
+      .filter((line) => /^https?:\/\//i.test(line))
+      .map((url) => {
+        const lowerUrl = url.toLowerCase();
+        if (lowerUrl.includes('scholar.google.com')) return { url, label: 'Google Scholar', icon: 'G', iconImage: profileIconByLabel['Google Scholar'] };
+        if (lowerUrl.includes('linkedin.com')) return { url, label: 'LinkedIn', icon: 'in', iconImage: profileIconByLabel.LinkedIn };
+        if (lowerUrl.includes('instagram.com')) return { url, label: 'Instagram', icon: 'ig', iconImage: profileIconByLabel.Instagram };
+        if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) return { url, label: 'X', icon: '𝕏', iconImage: profileIconByLabel.X };
+        return null;
+      })
+      .filter((link): link is { url: string; label: string; icon: string; iconImage: string } => Boolean(link));
+    const note = detailLines.filter((line) => !/^https?:\/\//i.test(line)).join(' ');
     const imageFile = teamFiles.find((candidate) => {
       const parsed = parse(candidate);
       return parsed.name === fileStem && imageExtensions.has(parsed.ext.toLowerCase());
+    });
+    const cvFile = teamFiles.find((candidate) => {
+      const parsed = parse(candidate);
+      return parsed.name === `${fileStem}_CV` && pdfExtensions.has(parsed.ext.toLowerCase());
     });
 
     return {
@@ -28,6 +60,8 @@ const teamMembers = teamFiles
       position,
       email,
       note,
+      profileLinks,
+      cv: cvFile ? `/team/${cvFile}` : '',
       image: imageFile ? `/team/${imageFile}` : '',
     };
   })
@@ -55,6 +89,16 @@ const teamMembers = teamFiles
               <h3>{member.name}</h3>
               {member.position && <p class="team-position">{member.position}</p>}
               {member.email && <a class="team-email" href={`mailto:${member.email}`}>{member.email}</a>}
+              {member.profileLinks.length > 0 && (
+                <div class="profile-links" aria-label={`${member.name} profile links`}>
+                  {member.profileLinks.map((link) => (
+                    <a class="profile-link" href={link.url} aria-label={link.label} title={link.label} target="_blank" rel="noreferrer">
+                      {link.iconImage ? <img src={link.iconImage} alt="" loading="lazy" /> : <span>{link.icon}</span>}
+                    </a>
+                  ))}
+                </div>
+              )}
+              {member.cv && <a class="team-cv" href={member.cv}>CV</a>}
               {member.note && <p class="team-note">{member.note}</p>}
               </div>
             </article>
@@ -98,7 +142,7 @@ const teamMembers = teamFiles
 
   .team-card {
     display: grid;
-    grid-template-columns: 6.5rem minmax(0, 1fr);
+    grid-template-columns: 8rem minmax(0, 1fr);
     align-items: center;
     gap: 1.2rem;
     border: 1px solid var(--line);
@@ -151,6 +195,47 @@ const teamMembers = teamFiles
     line-height: 1.55;
   }
 
+
+  .profile-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .profile-link {
+    display: inline-grid;
+    width: 1.55rem;
+    height: 1.55rem;
+    place-items: center;
+    border: 1px solid rgb(181 22 31 / 18%);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--accent-deep);
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .profile-link img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+  }
+
+  .profile-link:hover,
+  .profile-link:focus-visible {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .team-cv {
+    color: var(--accent-deep);
+    font-weight: 900;
+    text-decoration-color: rgb(181 22 31 / 28%);
+    text-underline-offset: 0.2em;
+  }
+
   .team-email {
     color: var(--accent-deep);
     font-weight: 800;
@@ -164,7 +249,7 @@ const teamMembers = teamFiles
     }
 
     .team-photo-frame {
-      width: 6.5rem;
+      width: 8rem;
     }
   }
 </style>
