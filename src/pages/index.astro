@@ -186,7 +186,7 @@ const researchSlides = [
 
   .home-news-bar {
     position: fixed;
-    top: 3.2rem;
+    top: var(--home-news-bar-top, 3.2rem);
     bottom: 0;
     left: 0;
     z-index: 8;
@@ -231,7 +231,8 @@ const researchSlides = [
 
 
   @media (min-width: 1061px) {
-    :global(main:has(.home-news-bar)) {
+    :global(main:has(.home-news-bar)),
+    :global(body:has(.home-news-bar) .site-footer) {
       width: min(1180px, calc(85vw - 2rem));
       margin-left: calc(15vw + ((85vw - min(1180px, calc(85vw - 2rem))) / 2));
       margin-right: auto;
@@ -650,3 +651,19 @@ const researchSlides = [
     }
   }
 </style>
+
+<script>
+  const newsBar = document.querySelector<HTMLElement>('.home-news-bar');
+  const siteHeader = document.querySelector<HTMLElement>('.site-header');
+
+  const updateNewsBarTop = () => {
+    if (!newsBar || !siteHeader) return;
+
+    const headerBottom = siteHeader.getBoundingClientRect().bottom;
+    newsBar.style.setProperty('--home-news-bar-top', `${Math.max(0, headerBottom)}px`);
+  };
+
+  updateNewsBarTop();
+  window.addEventListener('scroll', updateNewsBarTop, { passive: true });
+  window.addEventListener('resize', updateNewsBarTop);
+</script>
