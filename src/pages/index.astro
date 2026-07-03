@@ -77,7 +77,11 @@ const researchSlides = [
 
   {
     highlightSlides.length > 0 && (
-      <section class="highlight-carousel" aria-label="Research highlights" data-highlight-carousel>
+      <section class="highlight-section" aria-labelledby="highlights-title">
+        <div class="section-heading">
+          <p class="eyebrow" id="highlights-title">Highlights</p>
+        </div>
+        <div class="highlight-carousel" aria-label="Research highlights" data-highlight-carousel>
         <div class="highlight-track">
           {highlightSlides.map((slide) => (
             <figure class="highlight-slide">
@@ -99,6 +103,7 @@ const researchSlides = [
               data-highlight-dot={index}
             />
           ))}
+        </div>
         </div>
       </section>
     )
@@ -158,7 +163,7 @@ const researchSlides = [
         </div>
         <div>
           <dt>Openings</dt>
-          <dd><a href="/openings/">Prospective students and postdocs can check the openings page.</a></dd>
+          <dd><a href="/contact/#openings-title">Prospective students and postdocs can check the openings information on the contact page.</a></dd>
         </div>
       </dl>
     </div>
