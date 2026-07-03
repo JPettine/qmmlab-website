@@ -25,14 +25,9 @@ const newsItems = existsSync(newsDir)
 ---
 
 <BaseLayout title="News | QMM Lab" description="News and updates from QMM Lab.">
-  <section class="hero">
-    <p class="eyebrow">News</p>
-    <h1>Lab updates</h1>
-    <p class="tagline">Announcements, awards, publications, events, and recruiting updates from QMM Lab.</p>
-  </section>
   <section class="news-section" aria-labelledby="news-archive-title">
     <div class="section-heading">
-      <p class="eyebrow" id="news-archive-title">Archive</p>
+      <p class="eyebrow" id="news-archive-title">Lab News</p>
     </div>
     <div class="panel news-panel">
       {newsItems.length > 0 ? (
