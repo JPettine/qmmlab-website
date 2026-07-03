@@ -77,7 +77,11 @@ const researchSlides = [
 
   {
     highlightSlides.length > 0 && (
-      <section class="highlight-carousel" aria-label="Research highlights" data-highlight-carousel>
+      <section class="highlight-section" aria-labelledby="highlights-title">
+        <div class="section-heading">
+          <p class="eyebrow" id="highlights-title">Highlights</p>
+        </div>
+        <div class="highlight-carousel" aria-label="Research highlights" data-highlight-carousel>
         <div class="highlight-track">
           {highlightSlides.map((slide) => (
             <figure class="highlight-slide">
@@ -100,15 +104,20 @@ const researchSlides = [
             />
           ))}
         </div>
+        </div>
       </section>
     )
   }
 
-  <section class="about-group" aria-labelledby="about-title">
-    <p class="eyebrow">About the group</p>
-    <h1 id="about-title">{aboutTitle}</h1>
-    <div class="about-copy">
-      {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+  <section class="about-section" aria-labelledby="about-title">
+    <div class="section-heading">
+      <p class="eyebrow">About the group</p>
+    </div>
+    <div class="about-group">
+      <h1 id="about-title">{aboutTitle}</h1>
+      <div class="about-copy">
+        {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
     </div>
   </section>
 
@@ -135,29 +144,39 @@ const researchSlides = [
   </section>
 
 
-  <section class="logistics" aria-labelledby="logistics-title">
-    <div>
+  <section class="logistics-section" aria-labelledby="logistics-title">
+    <div class="section-heading">
       <p class="eyebrow">Logistics</p>
-      <h2 id="logistics-title">Contact and Visitor Information</h2>
     </div>
-    <dl class="contact-list">
+    <div class="logistics">
       <div>
-        <dt>Email</dt>
-        <dd><a href="mailto:jacob.pettine@stonybrook.edu">jacob.pettine@stonybrook.edu</a></dd>
+        <h2 id="logistics-title">Contact and Visitor Information</h2>
       </div>
-      <div>
-        <dt>Location</dt>
-        <dd>University campus building and room number TBD</dd>
-      </div>
-      <div>
-        <dt>Openings</dt>
-        <dd><a href="/openings/">Prospective students and postdocs can check the openings page.</a></dd>
-      </div>
-    </dl>
+      <dl class="contact-list">
+        <div>
+          <dt>Email</dt>
+          <dd><a href="mailto:jacob.pettine@stonybrook.edu">jacob.pettine@stonybrook.edu</a></dd>
+        </div>
+        <div>
+          <dt>Location</dt>
+          <dd>University campus building and room number TBD</dd>
+        </div>
+        <div>
+          <dt>Openings</dt>
+          <dd><a href="/contact/#openings-title">Prospective students and postdocs can check the openings information on the contact page.</a></dd>
+        </div>
+      </dl>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  .about-section,
+  .logistics-section {
+    display: grid;
+    gap: 1.5rem;
+  }
+
   .about-group {
     max-width: none;
     padding: clamp(1.5rem, 4vw, 3rem);

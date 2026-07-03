@@ -31,6 +31,7 @@ This is an Astro-based research group website. The site should be clean, academi
 
 ## Design rules
 
+- Use consistent page structure: present major content in similarly styled boxes/panels, with the small red eyebrow labels placed above the boxes rather than inside them unless there is a specific design reason not to.
 - Preserve the existing visual direction unless explicitly asked to redesign.
 - For the QMM / Quantum Meta Matter branding, do not alter approved logo assets unless explicitly asked.
 - Avoid generic startup-style design.

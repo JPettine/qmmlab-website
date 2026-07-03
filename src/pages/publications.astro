@@ -104,11 +104,12 @@ const publications = [
 ---
 
 <BaseLayout title="Publications | QMM Lab" description="Publications from QMM Lab.">
-  <section class="panel publications-panel">
+  <section class="publications-section" aria-labelledby="publication-list-title">
     <div class="section-heading">
-      <h2>Publication list</h2>
+      <p class="eyebrow" id="publication-list-title">Publication list</p>
     </div>
-    <ul class="publication-list">
+    <div class="panel publications-panel">
+      <ul class="publication-list">
       {publications.map((publication) => (
         <li class="publication-item">
           <a class="publication-title" href={publication.link} target="_blank" rel="noreferrer">
@@ -121,11 +122,13 @@ const publications = [
           </p>
         </li>
       ))}
-    </ul>
+      </ul>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  .publications-section { display: grid; gap: 1.5rem; }
   .publications-panel { display: grid; gap: 1.5rem; }
   .section-heading { max-width: 48rem; }
   .publication-list { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
