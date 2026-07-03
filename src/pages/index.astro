@@ -1,6 +1,6 @@
 ---
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 
@@ -43,6 +43,26 @@ const highlightSlides = existsSync(highlightsDir)
       .sort((a, b) => a.number - b.number)
   : [];
 
+
+const newsDir = join(process.cwd(), 'public', 'news');
+const newsItems = existsSync(newsDir)
+  ? readdirSync(newsDir)
+      .filter((fileName) => fileName.toLowerCase().endsWith('.txt'))
+      .map((fileName) => {
+        const lines = readFileSync(join(newsDir, fileName), 'utf8')
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        return {
+          id: parse(fileName).name,
+          snippet: lines[0] ?? '',
+        };
+      })
+      .filter((item) => item.snippet)
+      .sort((a, b) => b.id.localeCompare(a.id))
+  : [];
+
 const researchSlides = [
   {
     title: 'Programmable lattices',
@@ -73,6 +93,23 @@ const researchSlides = [
 ---
 
 <BaseLayout title="QMM Lab" description="Quantum Meta-Matter research group website.">
+
+
+  {
+    newsItems.length > 0 && (
+      <aside class="home-news-bar" aria-labelledby="home-news-title">
+        <p class="eyebrow" id="home-news-title">News</p>
+        <div class="home-news-list">
+          {newsItems.map((item) => (
+            <article class="home-news-item">
+              <p>{item.snippet}</p>
+            </article>
+          ))}
+        </div>
+        <a class="home-news-more" href="/news/">See more...</a>
+      </aside>
+    )
+  }
 
 
   {
@@ -143,36 +180,55 @@ const researchSlides = [
     </div>
   </section>
 
-
-  <section class="logistics-section" aria-labelledby="logistics-title">
-    <div class="section-heading">
-      <p class="eyebrow">Logistics</p>
-    </div>
-    <div class="logistics">
-      <div>
-        <h2 id="logistics-title">Contact and Visitor Information</h2>
-      </div>
-      <dl class="contact-list">
-        <div>
-          <dt>Email</dt>
-          <dd><a href="mailto:jacob.pettine@stonybrook.edu">jacob.pettine@stonybrook.edu</a></dd>
-        </div>
-        <div>
-          <dt>Location</dt>
-          <dd>University campus building and room number TBD</dd>
-        </div>
-        <div>
-          <dt>Openings</dt>
-          <dd><a href="/contact/#openings-title">Prospective students and postdocs can check the openings information on the contact page.</a></dd>
-        </div>
-      </dl>
-    </div>
-  </section>
 </BaseLayout>
 
 <style>
-  .about-section,
-  .logistics-section {
+
+  .home-news-bar {
+    position: fixed;
+    top: 3.2rem;
+    left: max(0.5rem, calc((100vw - 1180px) / 2 - 15vw - 1rem));
+    z-index: 8;
+    display: grid;
+    gap: 0.85rem;
+    width: 15vw;
+    max-width: 13rem;
+    max-height: calc(100vh - 4.2rem);
+    overflow: hidden;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: rgb(255 255 255 / 94%);
+    box-shadow: var(--shadow);
+  }
+
+  .home-news-list {
+    display: grid;
+    gap: 0.75rem;
+    overflow: hidden;
+  }
+
+  .home-news-item {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.75rem;
+  }
+
+  .home-news-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .home-news-more {
+    color: var(--accent-deep);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-decoration-color: rgb(181 22 31 / 28%);
+    text-underline-offset: 0.2em;
+  }
+
+  .about-section {
     display: grid;
     gap: 1.5rem;
   }
@@ -550,9 +606,16 @@ const researchSlides = [
   }
 
   @media (max-width: 1060px) {
-    .banner,
-    .logistics {
+    .banner {
       grid-template-columns: 1fr;
+    }
+
+    .home-news-bar {
+      position: static;
+      width: auto;
+      max-width: none;
+      max-height: none;
+      margin-bottom: 1.5rem;
     }
 
     .blurb-grid {
