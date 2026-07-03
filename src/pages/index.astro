@@ -231,7 +231,8 @@ const researchSlides = [
 
 
   @media (min-width: 1061px) {
-    :global(main:has(.home-news-bar)) {
+    :global(main:has(.home-news-bar)),
+    :global(body:has(.home-news-bar) .site-footer) {
       width: min(1180px, calc(85vw - 2rem));
       margin-left: calc(15vw + ((85vw - min(1180px, calc(85vw - 2rem))) / 2));
       margin-right: auto;
