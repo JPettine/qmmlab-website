@@ -1,15 +1,23 @@
 ---
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const openingsPath = join(process.cwd(), 'public', 'contact', 'openings.txt');
+const openingsContent = existsSync(openingsPath) ? readFileSync(openingsPath, 'utf8').trim() : '';
+const [openingsTitle = 'Join the QMM Lab!', ...openingsParagraphs] = openingsContent
+  .split(/\r?\n\r?\n/)
+  .map((part) => part.trim())
+  .filter(Boolean);
 ---
 
 <BaseLayout title="Openings | QMM Lab" description="Open positions and recruiting information for QMM Lab.">
   <section class="hero">
     <p class="eyebrow">Openings</p>
-    <h1>Join QMM Lab</h1>
-    <p class="tagline">Add current opportunities for students, postdocs, staff, and collaborators here.</p>
+    <h1>Join the QMM Lab!</h1>
   </section>
   <section class="panel">
-    <h2>Recruiting details coming soon</h2>
-    <p class="lede">This page is ready for application guidance, expected background, project areas, and contact instructions.</p>
+    <h2>{openingsTitle}</h2>
+    {openingsParagraphs.map((paragraph) => <p>{paragraph}</p>)}
   </section>
 </BaseLayout>

@@ -1,25 +1,63 @@
 ---
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+type ResearchEntry = {
+  id: string;
+  fileName: string;
+  fallbackTitle: string;
+};
+
+const readResearchEntry = ({ id, fileName, fallbackTitle }: ResearchEntry) => {
+  const filePath = join(process.cwd(), 'public', 'research', fileName);
+  const content = existsSync(filePath) ? readFileSync(filePath, 'utf8').trim() : '';
+  const [title = fallbackTitle, ...paragraphs] = content
+    .split(/\r?\n\r?\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return { id, title, paragraphs };
+};
+
+const researchQuestions = [
+  readResearchEntry({ id: 'questions-programmable-lattices', fileName: 'questions-programmable-lattices.txt', fallbackTitle: 'Programmable lattices' }),
+  readResearchEntry({ id: 'questions-correlated-phases', fileName: 'questions-correlated-phases.txt', fallbackTitle: 'Correlated phases' }),
+  readResearchEntry({ id: 'questions-theory-design', fileName: 'questions-theory-design.txt', fallbackTitle: 'Theory + design' }),
+];
+
+const experimentalApproaches = [
+  readResearchEntry({ id: 'approaches-metasurface-modes', fileName: 'approaches-metasurface-modes.txt', fallbackTitle: 'Metasurface modes' }),
+  readResearchEntry({ id: 'approaches-quantum-devices', fileName: 'approaches-quantum-devices.txt', fallbackTitle: 'Quantum devices' }),
+];
 ---
 
 <BaseLayout title="Research | QMM Lab" description="Research themes and projects from QMM Lab.">
-  <section class="research-section" aria-labelledby="directions-title" id="directions">
+  <section class="research-section" aria-labelledby="research-questions-title" id="research-questions">
     <div class="section-heading">
-      <p class="eyebrow" id="directions-title">Directions</p>
+      <p class="eyebrow" id="research-questions-title">Research Questions</p>
     </div>
-    <div class="panel">
-      <h1>Research areas</h1>
-      <p class="tagline">Describe the lab's major research themes, active projects, methods, and collaborations.</p>
+    <div class="research-card-grid">
+      {researchQuestions.map((entry) => (
+        <article class="panel research-entry" id={entry.id}>
+          <h2>{entry.title}</h2>
+          {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </article>
+      ))}
     </div>
   </section>
 
-  <section class="research-section" aria-labelledby="techniques-title" id="techniques">
+  <section class="research-section" aria-labelledby="experimental-approaches-title" id="experimental-approaches">
     <div class="section-heading">
-      <p class="eyebrow" id="techniques-title">Techniques</p>
+      <p class="eyebrow" id="experimental-approaches-title">Experimental Approaches</p>
     </div>
-    <div class="panel">
-      <h2>Project summaries coming soon</h2>
-      <p class="lede">Use this page for concise research area cards, project pages, figures, and links to related publications.</p>
+    <div class="research-card-grid">
+      {experimentalApproaches.map((entry) => (
+        <article class="panel research-entry" id={entry.id}>
+          <h2>{entry.title}</h2>
+          {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </article>
+      ))}
     </div>
   </section>
 </BaseLayout>
@@ -33,5 +71,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .section-heading {
     max-width: 760px;
+  }
+
+  .research-card-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .research-entry {
+    scroll-margin-top: 5rem;
+  }
+
+  .research-entry p:last-child {
+    margin-bottom: 0;
   }
 </style>

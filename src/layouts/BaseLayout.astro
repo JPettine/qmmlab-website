@@ -15,8 +15,8 @@ const navItems = [
     href: '/research/',
     label: 'Research',
     children: [
-      { href: '/research/#directions', label: 'Directions' },
-      { href: '/research/#techniques', label: 'Techniques' },
+      { href: '/research/#research-questions', label: 'Research Questions' },
+      { href: '/research/#experimental-approaches', label: 'Experimental Approaches' },
     ],
   },
   { href: '/people/', label: 'Team' },
@@ -85,9 +85,10 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     <footer class="site-footer">
       <div>
         <strong>QMM Lab</strong>
-        <p>Quantum Meta-Matter research group</p>
+        <p>Quantum Meta-Matter Laboratory</p>
+        <address>Department of Physics and Astronomy<br />Stony Brook University<br />Stony Brook, NY 11790</address>
       </div>
-      <p>© {new Date().getFullYear()} QMM Lab.</p>
+      <p>© {new Date().getFullYear()} QMM Lab</p>
     </footer>
   </body>
 </html>
@@ -434,14 +435,26 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
 
   .tagline,
   .lede,
-  .muted {
-    color: var(--muted);
+  .muted,
+  .panel p,
+  .card p {
+    color: var(--text);
+    font-size: clamp(1rem, 2vw, 1.2rem);
     line-height: 1.7;
   }
 
   .tagline {
     max-width: 48rem;
-    font-size: clamp(1.1rem, 3vw, 1.5rem);
+  }
+
+  .panel h1,
+  .panel h2,
+  .panel h3,
+  .card h2,
+  .card h3 {
+    color: var(--text);
+    font-size: clamp(1.35rem, 3vw, 2.25rem);
+    line-height: 1.15;
   }
 
   .actions,
@@ -503,8 +516,15 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     color: var(--accent);
   }
 
-  .site-footer p {
+  .site-footer p,
+  .site-footer address {
     margin-bottom: 0;
+  }
+
+  .site-footer address {
+    margin-top: 0.5rem;
+    font-style: normal;
+    line-height: 1.55;
   }
 
   @media (max-width: 760px) {

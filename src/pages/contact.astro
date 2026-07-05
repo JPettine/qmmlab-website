@@ -1,5 +1,20 @@
 ---
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const readContactText = (fileName: string) => {
+  const filePath = join(process.cwd(), 'public', 'contact', fileName);
+  return existsSync(filePath) ? readFileSync(filePath, 'utf8').trim() : '';
+};
+
+const openingsContent = readContactText('openings.txt');
+const [openingsTitle = 'Join the QMM Lab!', ...openingsParagraphs] = openingsContent
+  .split(/\r?\n\r?\n/)
+  .map((part) => part.trim())
+  .filter(Boolean);
+const contactText = readContactText('contact.txt') || 'For lab inquiries, recruiting questions, and visitor information, contact Prof. Pettine directly';
+const addressLines = ['Department of Physics and Astronomy', 'Stony Brook University', 'Stony Brook, NY 11790'];
 ---
 
 <BaseLayout title="Contact | QMM Lab" description="Contact and recruiting information for QMM Lab.">
@@ -8,8 +23,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p class="eyebrow" id="openings-title">Openings</p>
     </div>
     <div class="panel openings-panel">
-      <h2>Join QMM Lab</h2>
-      <p class="lede">Prospective students, postdocs, staff, and collaborators interested in quantum meta-matter research are encouraged to reach out by email with a brief description of their interests.</p>
+      <h2>{openingsTitle}</h2>
+      {openingsParagraphs.map((paragraph) => <p>{paragraph}</p>)}
     </div>
   </section>
 
@@ -18,8 +33,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p class="eyebrow" id="contact-title">Contact</p>
     </div>
     <div class="panel contact-panel">
-      <div>
-        <p class="tagline">For lab inquiries, recruiting questions, and visitor information, contact Jacob Pettine directly.</p>
+      <div class="contact-intro">
+        <p class="tagline">{contactText}</p>
       </div>
       <dl class="contact-list">
         <div>
@@ -28,20 +43,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
         <div>
           <dt>Location</dt>
-          <dd>Stony Brook University, Stony Brook, NY</dd>
+          <dd>{addressLines.map((line) => <>{line}<br /></>)}</dd>
         </div>
       </dl>
     </div>
   </section>
 
-  <section class="contact-section" aria-labelledby="map-title">
+  <section class="contact-section" aria-labelledby="directions-title">
     <div class="section-heading">
-      <p class="eyebrow" id="map-title">Map</p>
+      <p class="eyebrow" id="directions-title">Directions</p>
     </div>
     <div class="panel map-panel">
       <iframe
-        title="Google Map showing Stony Brook University"
-        src="https://www.google.com/maps?q=Stony%20Brook%20University%2C%20Stony%20Brook%2C%20NY&output=embed"
+        title="Google Map showing the Department of Physics and Astronomy at Stony Brook University"
+        src="https://www.google.com/maps?q=Department%20of%20Physics%20and%20Astronomy%2C%20Stony%20Brook%20University%2C%20Stony%20Brook%2C%20NY%2011790&output=embed"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
         allowfullscreen>
@@ -66,9 +81,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     gap: 1.5rem;
   }
 
+  .openings-panel p:last-child {
+    margin-bottom: 0;
+  }
+
   .contact-panel {
     grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.75fr);
-    align-items: start;
+    align-items: center;
+  }
+
+  .contact-intro p {
+    margin-bottom: 0;
   }
 
   .contact-list {
@@ -97,7 +120,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .contact-list dd {
     margin: 0.25rem 0 0;
-    color: var(--muted);
+    color: var(--text);
     line-height: 1.55;
   }
 
