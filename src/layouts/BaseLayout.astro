@@ -15,8 +15,8 @@ const navItems = [
     href: '/research/',
     label: 'Research',
     children: [
-      { href: '/research/#directions', label: 'Directions' },
-      { href: '/research/#techniques', label: 'Techniques' },
+      { href: '/research/#research-questions', label: 'Research Questions' },
+      { href: '/research/#experimental-approaches', label: 'Experimental Approaches' },
     ],
   },
   { href: '/people/', label: 'Team' },
@@ -85,9 +85,9 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     <footer class="site-footer">
       <div>
         <strong>QMM Lab</strong>
-        <p>Quantum Meta-Matter research group</p>
+        <address>Department of Physics and Astronomy<br />Stony Brook University<br />Stony Brook, NY 11790</address>
       </div>
-      <p>© {new Date().getFullYear()} QMM Lab.</p>
+      <p>© {new Date().getFullYear()} QMM Lab</p>
     </footer>
   </body>
 </html>
@@ -246,19 +246,19 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
 
   .nav-dropdown {
     position: absolute;
-    top: calc(100% + 0.35rem);
+    top: 100%;
     left: 50%;
     z-index: 10;
     display: grid;
     min-width: 10rem;
-    padding: 0.45rem;
+    padding: 0.65rem 0.45rem 0.45rem;
     border: 1px solid var(--line);
     border-radius: 18px;
     background: var(--surface);
     box-shadow: var(--shadow);
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, -0.3rem);
+    transform: translate(-50%, -0.15rem);
     transition: opacity 160ms ease, transform 160ms ease;
   }
 
@@ -434,14 +434,29 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
 
   .tagline,
   .lede,
-  .muted {
-    color: var(--muted);
+  .muted,
+  .panel p,
+  .card p {
+    color: var(--text);
+    font-size: 1rem;
     line-height: 1.7;
   }
 
   .tagline {
     max-width: 48rem;
-    font-size: clamp(1.1rem, 3vw, 1.5rem);
+  }
+
+  .hero h1,
+  .hero h2,
+  .hero h3,
+  .panel h1,
+  .panel h2,
+  .panel h3,
+  .card h2,
+  .card h3 {
+    color: var(--text);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    line-height: 1.15;
   }
 
   .actions,
@@ -493,7 +508,7 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    padding: 2rem 0 3rem;
+    padding: 1.25rem 0 1.75rem;
     border-top: 1px solid var(--line);
     color: var(--muted);
     font-size: 0.95rem;
@@ -503,8 +518,15 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     color: var(--accent);
   }
 
-  .site-footer p {
+  .site-footer p,
+  .site-footer address {
     margin-bottom: 0;
+  }
+
+  .site-footer address {
+    margin-top: 0.25rem;
+    font-style: normal;
+    line-height: 1.55;
   }
 
   @media (max-width: 760px) {

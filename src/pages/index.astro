@@ -4,7 +4,7 @@ import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 
-const aboutPath = join(process.cwd(), 'public', 'about', 'about.txt');
+const aboutPath = join(process.cwd(), 'public', 'home', 'about.txt');
 const aboutContent = existsSync(aboutPath)
   ? readFileSync(aboutPath, 'utf8').trim()
   : '';
@@ -68,26 +68,31 @@ const researchSlides = [
     title: 'Programmable lattices',
     caption: 'Dummy graphic placeholder for tunable quantum materials.',
     pattern: 'lattice',
+    href: '/research/#questions-programmable-lattices',
   },
   {
     title: 'Metasurface modes',
     caption: 'Dummy graphic placeholder for patterned meta-matter.',
     pattern: 'waves',
+    href: '/research/#approaches-metasurface-modes',
   },
   {
     title: 'Correlated phases',
     caption: 'Dummy graphic placeholder for emergent collective behavior.',
     pattern: 'nodes',
+    href: '/research/#questions-correlated-phases',
   },
   {
     title: 'Quantum devices',
     caption: 'Dummy graphic placeholder for measurement platforms.',
     pattern: 'device',
+    href: '/research/#approaches-quantum-devices',
   },
   {
     title: 'Theory + design',
     caption: 'Dummy graphic placeholder for models, algorithms, and discovery.',
     pattern: 'orbitals',
+    href: '/research/#questions-theory-design',
   },
 ];
 ---
@@ -163,10 +168,12 @@ const researchSlides = [
       <p class="eyebrow">Research snapshots</p>
     </div>
 
-    <div class="carousel-window" aria-label="Scrolling research graphic placeholders">
-      <div class="carousel-track">
-        {[...researchSlides, ...researchSlides].map((slide) => (
-          <article class={`research-slide ${slide.pattern}`}>
+    <div class="research-carousel-shell" data-research-carousel>
+      <button class="research-carousel-arrow research-carousel-arrow-left" type="button" aria-label="Previous research snapshot" data-research-carousel-prev><span aria-hidden="true">‹</span></button>
+      <div class="carousel-window" aria-label="Scrolling research graphic placeholders">
+        <div class="carousel-track">
+        {[...researchSlides, ...researchSlides, ...researchSlides].map((slide) => (
+          <a class={`research-slide ${slide.pattern}`} href={slide.href}>
             <div class="dummy-art" aria-hidden="true">
               <span></span><span></span><span></span><span></span><span></span>
             </div>
@@ -174,9 +181,11 @@ const researchSlides = [
               <h3>{slide.title}</h3>
               <p>{slide.caption}</p>
             </div>
-          </article>
+          </a>
         ))}
+        </div>
       </div>
+      <button class="research-carousel-arrow research-carousel-arrow-right" type="button" aria-label="Next research snapshot" data-research-carousel-next><span aria-hidden="true">›</span></button>
     </div>
   </section>
 
@@ -256,8 +265,8 @@ const researchSlides = [
   .about-group h1 {
     max-width: 100%;
     margin-bottom: 1rem;
-    color: var(--accent);
-    font-size: clamp(1.35rem, 3vw, 2.25rem);
+    color: var(--text);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
     line-height: 1.15;
   }
 
@@ -398,9 +407,14 @@ const researchSlides = [
     max-width: 680px;
   }
 
-  .carousel-window {
+  .research-carousel-shell {
+    position: relative;
     margin-top: 0.85rem;
+  }
+
+  .carousel-window {
     overflow: hidden;
+    scroll-behavior: smooth;
     border: 1px solid var(--line);
     border-radius: 30px;
     background: linear-gradient(180deg, #ffffff, #fffafa);
@@ -409,11 +423,6 @@ const researchSlides = [
   .carousel-track {
     display: flex;
     width: max-content;
-    animation: scroll-research 38s linear infinite;
-  }
-
-  .carousel-window:hover .carousel-track {
-    animation-play-state: paused;
   }
 
   .research-slide {
@@ -427,6 +436,14 @@ const researchSlides = [
     border: 1px solid rgb(181 22 31 / 12%);
     border-radius: 24px;
     background: #ffffff;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .research-slide:hover,
+  .research-slide:focus-visible {
+    border-color: rgb(181 22 31 / 36%);
+    box-shadow: 0 14px 40px rgb(125 13 20 / 12%);
   }
 
   .research-slide:last-child {
@@ -439,8 +456,48 @@ const researchSlides = [
 
   .research-slide p {
     margin-bottom: 0;
-    color: var(--muted);
+    color: var(--text);
     line-height: 1.55;
+  }
+
+  .research-carousel-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgb(181 22 31 / 20%);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 92%);
+    box-shadow: var(--shadow);
+    color: var(--accent-deep);
+    cursor: pointer;
+    font-size: 2rem;
+    line-height: 0;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 160ms ease, background 160ms ease;
+  }
+
+  .research-carousel-arrow span {
+    transform: translateY(-0.05em);
+  }
+
+  .research-carousel-arrow-left { left: 0.75rem; }
+  .research-carousel-arrow-right { right: 0.75rem; }
+
+  .research-carousel-shell:hover .research-carousel-arrow,
+  .research-carousel-shell:focus-within .research-carousel-arrow {
+    opacity: 1;
+  }
+
+  .research-carousel-arrow:hover,
+  .research-carousel-arrow:focus-visible {
+    background: #ffffff;
   }
 
   .dummy-art {
@@ -607,10 +664,6 @@ const researchSlides = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .carousel-track {
-      animation: none;
-    }
-
     .carousel-window {
       overflow-x: auto;
     }
@@ -666,4 +719,66 @@ const researchSlides = [
   updateNewsBarTop();
   window.addEventListener('scroll', updateNewsBarTop, { passive: true });
   window.addEventListener('resize', updateNewsBarTop);
+</script>
+
+
+<script>
+  const researchCarousels = document.querySelectorAll<HTMLElement>('[data-research-carousel]');
+
+  researchCarousels.forEach((carousel) => {
+    const windowEl = carousel.querySelector<HTMLElement>('.carousel-window');
+    const track = carousel.querySelector<HTMLElement>('.carousel-track');
+    const prev = carousel.querySelector<HTMLButtonElement>('[data-research-carousel-prev]');
+    const next = carousel.querySelector<HTMLButtonElement>('[data-research-carousel-next]');
+
+    if (!windowEl || !track || !prev || !next) return;
+
+    let offset = 0;
+    let lastTime = performance.now();
+    let isPaused = false;
+    const speed = 32;
+
+    const getLoopWidth = () => track.scrollWidth / 3;
+    const wrapOffset = () => {
+      const loopWidth = getLoopWidth();
+      if (loopWidth <= 0) return;
+      offset = ((offset % loopWidth) + loopWidth) % loopWidth;
+    };
+
+    const render = () => {
+      track.style.transform = `translateX(-${offset}px)`;
+    };
+
+    const step = (time: number) => {
+      const elapsed = time - lastTime;
+      lastTime = time;
+
+      if (!isPaused && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        offset += (elapsed / 1000) * speed;
+        wrapOffset();
+        render();
+      }
+
+      requestAnimationFrame(step);
+    };
+
+    const move = (direction: 1 | -1) => {
+      const slide = track.querySelector<HTMLElement>('.research-slide');
+      const slideWidth = slide ? slide.offsetWidth + 16 : Math.min(380, windowEl.clientWidth * 0.8);
+      offset += direction * slideWidth;
+      wrapOffset();
+      render();
+    };
+
+    carousel.addEventListener('mouseenter', () => { isPaused = true; });
+    carousel.addEventListener('mouseleave', () => { isPaused = false; });
+    carousel.addEventListener('focusin', () => { isPaused = true; });
+    carousel.addEventListener('focusout', () => { isPaused = false; });
+    window.addEventListener('resize', () => { wrapOffset(); render(); });
+
+    prev.addEventListener('click', () => move(-1));
+    next.addEventListener('click', () => move(1));
+
+    requestAnimationFrame(step);
+  });
 </script>
