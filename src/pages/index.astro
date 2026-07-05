@@ -169,10 +169,10 @@ const researchSlides = [
     </div>
 
     <div class="research-carousel-shell" data-research-carousel>
-      <button class="research-carousel-arrow research-carousel-arrow-left" type="button" aria-label="Previous research snapshot" data-research-carousel-prev>‹</button>
+      <button class="research-carousel-arrow research-carousel-arrow-left" type="button" aria-label="Previous research snapshot" data-research-carousel-prev><span aria-hidden="true">‹</span></button>
       <div class="carousel-window" aria-label="Scrolling research graphic placeholders">
         <div class="carousel-track">
-        {[...researchSlides, ...researchSlides].map((slide) => (
+        {[...researchSlides, ...researchSlides, ...researchSlides].map((slide) => (
           <a class={`research-slide ${slide.pattern}`} href={slide.href}>
             <div class="dummy-art" aria-hidden="true">
               <span></span><span></span><span></span><span></span><span></span>
@@ -185,7 +185,7 @@ const researchSlides = [
         ))}
         </div>
       </div>
-      <button class="research-carousel-arrow research-carousel-arrow-right" type="button" aria-label="Next research snapshot" data-research-carousel-next>›</button>
+      <button class="research-carousel-arrow research-carousel-arrow-right" type="button" aria-label="Next research snapshot" data-research-carousel-next><span aria-hidden="true">›</span></button>
     </div>
   </section>
 
@@ -265,8 +265,8 @@ const researchSlides = [
   .about-group h1 {
     max-width: 100%;
     margin-bottom: 1rem;
-    color: var(--accent);
-    font-size: clamp(1.35rem, 3vw, 2.25rem);
+    color: var(--text);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
     line-height: 1.15;
   }
 
@@ -423,11 +423,6 @@ const researchSlides = [
   .carousel-track {
     display: flex;
     width: max-content;
-    animation: scroll-research 38s linear infinite;
-  }
-
-  .carousel-window:hover .carousel-track {
-    animation-play-state: paused;
   }
 
   .research-slide {
@@ -469,10 +464,12 @@ const researchSlides = [
     position: absolute;
     top: 50%;
     z-index: 2;
-    display: grid;
+    display: flex;
     width: 2.75rem;
     height: 2.75rem;
-    place-items: center;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border: 1px solid rgb(181 22 31 / 20%);
     border-radius: 999px;
     background: rgb(255 255 255 / 92%);
@@ -480,10 +477,14 @@ const researchSlides = [
     color: var(--accent-deep);
     cursor: pointer;
     font-size: 2rem;
-    line-height: 1;
+    line-height: 0;
     opacity: 0;
     transform: translateY(-50%);
     transition: opacity 160ms ease, background 160ms ease;
+  }
+
+  .research-carousel-arrow span {
+    transform: translateY(-0.05em);
   }
 
   .research-carousel-arrow-left { left: 0.75rem; }
@@ -663,10 +664,6 @@ const researchSlides = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .carousel-track {
-      animation: none;
-    }
-
     .carousel-window {
       overflow-x: auto;
     }
@@ -736,12 +733,52 @@ const researchSlides = [
 
     if (!windowEl || !track || !prev || !next) return;
 
-    const move = (direction: 1 | -1) => {
-      track.style.animationPlayState = 'paused';
-      windowEl.scrollBy({ left: direction * Math.min(380, windowEl.clientWidth * 0.8), behavior: 'smooth' });
+    let offset = 0;
+    let lastTime = performance.now();
+    let isPaused = false;
+    const speed = 32;
+
+    const getLoopWidth = () => track.scrollWidth / 3;
+    const wrapOffset = () => {
+      const loopWidth = getLoopWidth();
+      if (loopWidth <= 0) return;
+      offset = ((offset % loopWidth) + loopWidth) % loopWidth;
     };
+
+    const render = () => {
+      track.style.transform = `translateX(-${offset}px)`;
+    };
+
+    const step = (time: number) => {
+      const elapsed = time - lastTime;
+      lastTime = time;
+
+      if (!isPaused && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        offset += (elapsed / 1000) * speed;
+        wrapOffset();
+        render();
+      }
+
+      requestAnimationFrame(step);
+    };
+
+    const move = (direction: 1 | -1) => {
+      const slide = track.querySelector<HTMLElement>('.research-slide');
+      const slideWidth = slide ? slide.offsetWidth + 16 : Math.min(380, windowEl.clientWidth * 0.8);
+      offset += direction * slideWidth;
+      wrapOffset();
+      render();
+    };
+
+    carousel.addEventListener('mouseenter', () => { isPaused = true; });
+    carousel.addEventListener('mouseleave', () => { isPaused = false; });
+    carousel.addEventListener('focusin', () => { isPaused = true; });
+    carousel.addEventListener('focusout', () => { isPaused = false; });
+    window.addEventListener('resize', () => { wrapOffset(); render(); });
 
     prev.addEventListener('click', () => move(-1));
     next.addEventListener('click', () => move(1));
+
+    requestAnimationFrame(step);
   });
 </script>
