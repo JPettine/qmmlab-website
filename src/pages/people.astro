@@ -97,7 +97,7 @@ const teamMembers = teamFiles
                       {link.iconImage ? <img src={link.iconImage} alt="" loading="lazy" /> : <span>{link.icon}</span>}
                     </a>
                   ))}
-                  {member.cv && <a class="team-cv" href={member.cv}>CV</a>}
+                  {member.cv && <a class="team-cv" href={member.cv} target="_blank" rel="noreferrer">CV</a>}
                 </div>
               )}
               {member.note && <p class="team-note">{member.note}</p>}
