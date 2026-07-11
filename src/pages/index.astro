@@ -41,9 +41,10 @@ const highlightSlides = existsSync(highlightsDir)
           summary,
           description: bodyParts.join(' '),
           href,
+          isExternal: /^https?:\/\//i.test(href),
         };
       })
-      .filter((slide): slide is { number: number; image: string; summary: string; description: string; href: string } => Boolean(slide))
+      .filter((slide): slide is { number: number; image: string; summary: string; description: string; href: string; isExternal: boolean } => Boolean(slide))
       .sort((a, b) => a.number - b.number)
   : [];
 
@@ -141,7 +142,7 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
           {highlightSlides.map((slide) => (
             <figure class="highlight-slide">
               {slide.href ? (
-                <a class="highlight-image-link" href={slide.href}>
+                <a class="highlight-image-link" href={slide.href} target={slide.isExternal ? '_blank' : undefined} rel={slide.isExternal ? 'noreferrer' : undefined}>
                   <img src={slide.image} alt={slide.summary} loading="eager" />
                 </a>
               ) : (
