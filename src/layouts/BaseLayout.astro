@@ -115,7 +115,31 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     };
 
     const advanceSlide = () => showSlide((currentSlide + 1) % slideCount);
-    window.setInterval(advanceSlide, 5000);
+    let autoAdvanceTimer: number | undefined;
+
+    const startAutoAdvance = () => {
+      if (autoAdvanceTimer !== undefined) return;
+      autoAdvanceTimer = window.setInterval(advanceSlide, 5000);
+    };
+
+    const stopAutoAdvance = () => {
+      if (autoAdvanceTimer === undefined) return;
+      window.clearInterval(autoAdvanceTimer);
+      autoAdvanceTimer = undefined;
+    };
+
+    const resumeWhenInactive = () => {
+      window.setTimeout(() => {
+        if (carousel.matches(':hover') || carousel.contains(document.activeElement)) return;
+        startAutoAdvance();
+      }, 0);
+    };
+
+    startAutoAdvance();
+    carousel.addEventListener('pointerenter', stopAutoAdvance);
+    carousel.addEventListener('pointerleave', resumeWhenInactive);
+    carousel.addEventListener('focusin', stopAutoAdvance);
+    carousel.addEventListener('focusout', resumeWhenInactive);
 
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => showSlide(index));
