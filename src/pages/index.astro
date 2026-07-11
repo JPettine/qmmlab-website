@@ -78,11 +78,13 @@ const snapshotPlaceholders = researchFiles
     if (!match) return null;
     const section = match[1].toLowerCase();
     const number = Number(match[2]);
-    const title = readFileSync(join(researchDir, fileName), 'utf8').trim().split(/\r?\n\r?\n/)[0]?.trim()
-      || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`);
-    return { section, number, title, image: '' };
+    const blocks = readFileSync(join(researchDir, fileName), 'utf8').trim().split(/\r?\n\r?\n/).map((part) => part.trim()).filter(Boolean);
+    const title = blocks[0] || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`);
+    const snippetBlock = blocks.find((block) => block.toLowerCase().startsWith('home snippet:'));
+    const caption = snippetBlock?.replace(/^Home snippet:\s*/i, '') || 'Snapshot image coming soon';
+    return { section, number, title, image: '', caption };
   })
-  .filter((slide): slide is { section: string; number: number; title: string; image: string } => Boolean(slide));
+  .filter((slide): slide is { section: string; number: number; title: string; image: string; caption: string } => Boolean(slide));
 const snapshotImages = snapshotFiles
   .map((fileName) => {
     const match = fileName.match(snapshotPattern);
@@ -94,13 +96,14 @@ const snapshotImages = snapshotFiles
       number,
       title: section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`,
       image: `/home/snapshots/${fileName}`,
+      caption: 'Research snapshot',
     };
   })
-  .filter((slide): slide is { section: string; number: number; title: string; image: string } => Boolean(slide));
+  .filter((slide): slide is { section: string; number: number; title: string; image: string; caption: string } => Boolean(slide));
 const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPlaceholders)
   .map((slide) => ({
     ...slide,
-    caption: slide.image ? 'Research snapshot' : 'Snapshot image coming soon',
+    caption: slide.caption,
     href: `/research/#${slide.section}${slide.number}`,
     randomKey: Math.random(),
   }))
@@ -295,7 +298,7 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
   .about-copy {
     display: grid;
     gap: 1rem;
-    max-width: 760px;
+    max-width: none;
   }
 
   .about-copy p {

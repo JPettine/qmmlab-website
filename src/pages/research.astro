@@ -25,10 +25,11 @@ const readResearchEntries = (section: 'questions' | 'approaches', fallbackTitles
       const order = Number(match[1]);
       const label = match[2];
       const content = readFileSync(join(researchDir, fileName), 'utf8').trim();
-      const [title = fallbackTitles[order - 1] ?? `${section} ${order}`, ...paragraphs] = content
+      const [title = fallbackTitles[order - 1] ?? `${section} ${order}`, ...paragraphBlocks] = content
         .split(/\r?\n\r?\n/)
         .map((part) => part.trim())
         .filter(Boolean);
+      const paragraphs = paragraphBlocks.filter((paragraph) => !paragraph.toLowerCase().startsWith('home snippet:'));
       const imageFile = files.find((candidate) => {
         const parsed = parse(candidate);
         return parsed.name === `${section}${order}_${label}` && imageExtensions.has(parsed.ext.toLowerCase());
