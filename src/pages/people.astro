@@ -63,6 +63,7 @@ const teamMembers = teamFiles
       profileLinks,
       cv: cvFile ? `/team/${cvFile}` : '',
       image: imageFile ? `/team/${imageFile}` : '',
+      photoClass: fileStem,
     };
   })
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -78,7 +79,7 @@ const teamMembers = teamFiles
         <div class="team-grid">
           {teamMembers.map((member) => (
             <article class="team-card">
-              <div class="team-photo-frame">
+              <div class:list={['team-photo-frame', `team-photo-${member.photoClass}`]}>
               {member.image ? (
                 <img src={member.image} alt={`${member.name} headshot`} loading="lazy" />
               ) : (
@@ -168,6 +169,14 @@ const teamMembers = teamFiles
     display: block;
     object-fit: cover;
     object-position: center;
+  }
+
+  .team-photo-JacobPettine img {
+    transform: scale(1.14);
+  }
+
+  .team-photo-YunfanHu img {
+    object-position: center 35%;
   }
 
   .team-photo-placeholder {
