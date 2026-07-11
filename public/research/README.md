@@ -1,0 +1,41 @@
+# Research content and images
+
+Research entries are generated from text files in this folder. Optional images can be added later using the same base file name as the matching text file.
+
+## Naming convention
+
+Research question text files:
+
+```text
+questions1_label.txt
+questions2_label.txt
+```
+
+Experimental approach text files:
+
+```text
+approaches1_label.txt
+approaches2_label.txt
+```
+
+- The number controls display order and the page anchor (`questions1`, `approaches1`, etc.).
+- The label can be any descriptive text and does not affect ordering.
+- Optional images use the same base name with an allowed image extension, for example `questions1_label.png` or `approaches2_label.jpg`.
+
+## Text formatting
+
+```text
+Entry title
+
+First paragraph.
+
+Second paragraph.
+```
+
+The first paragraph block becomes the card title. Later paragraph blocks become justified body text.
+
+## Image formats and dimensions
+
+Allowed image types are `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`, `.gif`, and `.svg`.
+
+Images are displayed beside the text on larger screens, using about **1/3** of the card width for the image and **2/3** for text. Use a landscape image close to **4:3** to minimize cropping.

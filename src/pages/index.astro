@@ -15,31 +15,35 @@ const [aboutTitle = 'A clean home for quantum meta-matter research', ...aboutPar
 
 
 const highlightsDir = join(process.cwd(), 'public', 'highlights');
-const highlightImagePattern = /^image_(\d+)\.(?:png|jpe?g|webp|avif)$/i;
+const imageExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '.svg']);
+const highlightImagePattern = /^highlight(\d+)_(.+)\.([^.]+)$/i;
+const highlightLinkPattern = /^(https?:\/\/\S+|\/\S*)$/i;
 const highlightSlides = existsSync(highlightsDir)
   ? readdirSync(highlightsDir)
       .map((fileName) => {
         const match = fileName.match(highlightImagePattern);
-        if (!match) return null;
+        if (!match || !imageExtensions.has(`.${match[3].toLowerCase()}`)) return null;
 
         const slideNumber = match[1];
-        const textPath = join(highlightsDir, `text_${slideNumber}.txt`);
-        const textContent = existsSync(textPath)
-          ? readFileSync(textPath, 'utf8').trim()
-          : '';
-        const [summary = `Research highlight ${slideNumber}`, ...bodyParts] = textContent
-          .split(/\r?\n\r?\n|\r?\n/)
-          .map((part) => part.trim())
-          .filter(Boolean);
+        const label = match[2];
+        const textPath = join(highlightsDir, `highlight${slideNumber}_${label}.txt`);
+        const textBlocks = existsSync(textPath)
+          ? readFileSync(textPath, 'utf8').trim().split(/\r?\n\r?\n/).map((part) => part.trim()).filter(Boolean)
+          : [];
+        const possibleLink = textBlocks.at(-1) ?? '';
+        const href = highlightLinkPattern.test(possibleLink) ? possibleLink : '';
+        const displayBlocks = href ? textBlocks.slice(0, -1) : textBlocks;
+        const [summary = `Research highlight ${slideNumber}`, ...bodyParts] = displayBlocks;
 
         return {
           number: Number(slideNumber),
           image: `/highlights/${fileName}`,
           summary,
           description: bodyParts.join(' '),
+          href,
         };
       })
-      .filter((slide): slide is { number: number; image: string; summary: string; description: string } => Boolean(slide))
+      .filter((slide): slide is { number: number; image: string; summary: string; description: string; href: string } => Boolean(slide))
       .sort((a, b) => a.number - b.number)
   : [];
 
@@ -63,38 +67,47 @@ const newsItems = existsSync(newsDir)
       .sort((a, b) => b.id.localeCompare(a.id))
   : [];
 
-const researchSlides = [
-  {
-    title: 'Programmable lattices',
-    caption: 'Dummy graphic placeholder for tunable quantum materials.',
-    pattern: 'lattice',
-    href: '/research/#questions-programmable-lattices',
-  },
-  {
-    title: 'Metasurface modes',
-    caption: 'Dummy graphic placeholder for patterned meta-matter.',
-    pattern: 'waves',
-    href: '/research/#approaches-metasurface-modes',
-  },
-  {
-    title: 'Correlated phases',
-    caption: 'Dummy graphic placeholder for emergent collective behavior.',
-    pattern: 'nodes',
-    href: '/research/#questions-correlated-phases',
-  },
-  {
-    title: 'Quantum devices',
-    caption: 'Dummy graphic placeholder for measurement platforms.',
-    pattern: 'device',
-    href: '/research/#approaches-quantum-devices',
-  },
-  {
-    title: 'Theory + design',
-    caption: 'Dummy graphic placeholder for models, algorithms, and discovery.',
-    pattern: 'orbitals',
-    href: '/research/#questions-theory-design',
-  },
-];
+const researchDir = join(process.cwd(), 'public', 'research');
+const snapshotsDir = join(process.cwd(), 'public', 'home', 'snapshots');
+const snapshotPattern = /^(questions|approaches)(\d+)_snapshot_(.+)\.([^.]+)$/i;
+const snapshotFiles = existsSync(snapshotsDir) ? readdirSync(snapshotsDir) : [];
+const researchFiles = existsSync(researchDir) ? readdirSync(researchDir) : [];
+const snapshotPlaceholders = researchFiles
+  .map((fileName) => {
+    const match = fileName.match(/^(questions|approaches)(\d+)_(.+)\.txt$/i);
+    if (!match) return null;
+    const section = match[1].toLowerCase();
+    const number = Number(match[2]);
+    const blocks = readFileSync(join(researchDir, fileName), 'utf8').trim().split(/\r?\n\r?\n/).map((part) => part.trim()).filter(Boolean);
+    const title = blocks[0] || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`);
+    const snippetBlock = blocks.find((block) => block.toLowerCase().startsWith('home snippet:'));
+    const caption = snippetBlock?.replace(/^Home snippet:\s*/i, '') || 'Snapshot image coming soon';
+    return { section, number, title, image: '', caption };
+  })
+  .filter((slide): slide is { section: string; number: number; title: string; image: string; caption: string } => Boolean(slide));
+const snapshotImages = snapshotFiles
+  .map((fileName) => {
+    const match = fileName.match(snapshotPattern);
+    if (!match || !imageExtensions.has(`.${match[4].toLowerCase()}`)) return null;
+    const section = match[1].toLowerCase();
+    const number = Number(match[2]);
+    return {
+      section,
+      number,
+      title: section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`,
+      image: `/home/snapshots/${fileName}`,
+      caption: 'Research snapshot',
+    };
+  })
+  .filter((slide): slide is { section: string; number: number; title: string; image: string; caption: string } => Boolean(slide));
+const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPlaceholders)
+  .map((slide) => ({
+    ...slide,
+    caption: slide.caption,
+    href: `/research/#${slide.section}${slide.number}`,
+    randomKey: Math.random(),
+  }))
+  .sort((a, b) => a.randomKey - b.randomKey);
 ---
 
 <BaseLayout title="QMM Lab" description="Quantum Meta-Matter research group website.">
@@ -127,7 +140,13 @@ const researchSlides = [
         <div class="highlight-track">
           {highlightSlides.map((slide) => (
             <figure class="highlight-slide">
-              <img src={slide.image} alt={slide.summary} loading="eager" />
+              {slide.href ? (
+                <a class="highlight-image-link" href={slide.href}>
+                  <img src={slide.image} alt={slide.summary} loading="eager" />
+                </a>
+              ) : (
+                <img src={slide.image} alt={slide.summary} loading="eager" />
+              )}
               <figcaption class="highlight-caption">
                 <strong>{slide.summary}</strong>
                 {slide.description && <p>{slide.description}</p>}
@@ -163,31 +182,37 @@ const researchSlides = [
     </div>
   </section>
 
-  <section class="research-carousel" aria-labelledby="carousel-title">
-    <div class="section-heading">
-      <p class="eyebrow">Research snapshots</p>
-    </div>
-
-    <div class="research-carousel-shell" data-research-carousel>
-      <button class="research-carousel-arrow research-carousel-arrow-left" type="button" aria-label="Previous research snapshot" data-research-carousel-prev><span aria-hidden="true">‹</span></button>
-      <div class="carousel-window" aria-label="Scrolling research graphic placeholders">
-        <div class="carousel-track">
-        {[...researchSlides, ...researchSlides, ...researchSlides].map((slide) => (
-          <a class={`research-slide ${slide.pattern}`} href={slide.href}>
-            <div class="dummy-art" aria-hidden="true">
-              <span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <div>
-              <h3>{slide.title}</h3>
-              <p>{slide.caption}</p>
-            </div>
-          </a>
-        ))}
+  {
+    researchSlides.length > 0 && (
+      <section class="research-carousel" aria-labelledby="carousel-title">
+        <div class="section-heading">
+          <p class="eyebrow">Research snapshots</p>
         </div>
-      </div>
-      <button class="research-carousel-arrow research-carousel-arrow-right" type="button" aria-label="Next research snapshot" data-research-carousel-next><span aria-hidden="true">›</span></button>
-    </div>
-  </section>
+
+        <div class="research-carousel-shell" data-research-carousel>
+          <button class="research-carousel-arrow research-carousel-arrow-left" type="button" aria-label="Previous research snapshot" data-research-carousel-prev><span aria-hidden="true">‹</span></button>
+          <div class="carousel-window" aria-label="Scrolling research snapshots">
+            <div class="carousel-track">
+            {[...researchSlides, ...researchSlides, ...researchSlides].map((slide) => (
+              <a class="research-slide" href={slide.href}>
+                {slide.image ? (
+                  <img class="snapshot-image" src={slide.image} alt={slide.title} loading="lazy" />
+                ) : (
+                  <div class="snapshot-placeholder" aria-hidden="true"></div>
+                )}
+                <div>
+                  <h3>{slide.title}</h3>
+                  <p>{slide.caption}</p>
+                </div>
+              </a>
+            ))}
+            </div>
+          </div>
+          <button class="research-carousel-arrow research-carousel-arrow-right" type="button" aria-label="Next research snapshot" data-research-carousel-next><span aria-hidden="true">›</span></button>
+        </div>
+      </section>
+    )
+  }
 
 </BaseLayout>
 
@@ -273,7 +298,7 @@ const researchSlides = [
   .about-copy {
     display: grid;
     gap: 1rem;
-    max-width: 760px;
+    max-width: none;
   }
 
   .about-copy p {
@@ -498,6 +523,22 @@ const researchSlides = [
   .research-carousel-arrow:hover,
   .research-carousel-arrow:focus-visible {
     background: #ffffff;
+  }
+
+  .highlight-image-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .snapshot-image,
+  .snapshot-placeholder {
+    width: 100%;
+    height: 230px;
+    border-radius: 18px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #dddddd, #f1f1f1);
   }
 
   .dummy-art {

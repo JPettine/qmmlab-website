@@ -15,8 +15,8 @@ const navItems = [
     href: '/research/',
     label: 'Research',
     children: [
-      { href: '/research/#research-questions', label: 'Research Questions' },
-      { href: '/research/#experimental-approaches', label: 'Experimental Approaches' },
+      { href: '/research/#research-questions', label: 'Questions' },
+      { href: '/research/#experimental-approaches', label: 'Approaches' },
     ],
   },
   { href: '/people/', label: 'Team' },
@@ -115,7 +115,31 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     };
 
     const advanceSlide = () => showSlide((currentSlide + 1) % slideCount);
-    window.setInterval(advanceSlide, 5000);
+    let autoAdvanceTimer: number | undefined;
+
+    const startAutoAdvance = () => {
+      if (autoAdvanceTimer !== undefined) return;
+      autoAdvanceTimer = window.setInterval(advanceSlide, 5000);
+    };
+
+    const stopAutoAdvance = () => {
+      if (autoAdvanceTimer === undefined) return;
+      window.clearInterval(autoAdvanceTimer);
+      autoAdvanceTimer = undefined;
+    };
+
+    const resumeWhenInactive = () => {
+      window.setTimeout(() => {
+        if (carousel.matches(':hover') || carousel.contains(document.activeElement)) return;
+        startAutoAdvance();
+      }, 0);
+    };
+
+    startAutoAdvance();
+    carousel.addEventListener('pointerenter', stopAutoAdvance);
+    carousel.addEventListener('pointerleave', resumeWhenInactive);
+    carousel.addEventListener('focusin', stopAutoAdvance);
+    carousel.addEventListener('focusout', resumeWhenInactive);
 
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => showSlide(index));
@@ -325,16 +349,13 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
     background: rgb(0 0 0 / 65%);
     color: #ffffff;
     opacity: 0;
-    transform: translateX(0.75rem);
-    transition:
-      opacity 180ms ease,
-      transform 180ms ease;
+    transform: none;
+    transition: opacity 180ms ease;
   }
 
   .highlight-carousel:hover .highlight-caption,
   .highlight-carousel:focus-within .highlight-caption {
     opacity: 1;
-    transform: translateX(0);
   }
 
   .highlight-caption strong {
