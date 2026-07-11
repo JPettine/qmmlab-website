@@ -1,35 +1,62 @@
 ---
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 type ResearchEntry = {
   id: string;
-  fileName: string;
-  fallbackTitle: string;
+  order: number;
+  label: string;
+  title: string;
+  paragraphs: string[];
+  image: string;
 };
 
-const readResearchEntry = ({ id, fileName, fallbackTitle }: ResearchEntry) => {
-  const filePath = join(process.cwd(), 'public', 'research', fileName);
-  const content = existsSync(filePath) ? readFileSync(filePath, 'utf8').trim() : '';
-  const [title = fallbackTitle, ...paragraphs] = content
-    .split(/\r?\n\r?\n/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+const researchDir = join(process.cwd(), 'public', 'research');
+const imageExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '.svg']);
 
-  return { id, title, paragraphs };
+const readResearchEntries = (section: 'questions' | 'approaches', fallbackTitles: string[]) => {
+  const files = existsSync(researchDir) ? readdirSync(researchDir) : [];
+  return files
+    .map((fileName) => {
+      const match = fileName.match(new RegExp(`^${section}(\\d+)_(.+)\\.txt$`, 'i'));
+      if (!match) return null;
+
+      const order = Number(match[1]);
+      const label = match[2];
+      const content = readFileSync(join(researchDir, fileName), 'utf8').trim();
+      const [title = fallbackTitles[order - 1] ?? `${section} ${order}`, ...paragraphs] = content
+        .split(/\r?\n\r?\n/)
+        .map((part) => part.trim())
+        .filter(Boolean);
+      const imageFile = files.find((candidate) => {
+        const parsed = parse(candidate);
+        return parsed.name === `${section}${order}_${label}` && imageExtensions.has(parsed.ext.toLowerCase());
+      });
+
+      return {
+        id: `${section}${order}`,
+        order,
+        label,
+        title,
+        paragraphs,
+        image: imageFile ? `/research/${imageFile}` : '',
+      };
+    })
+    .filter((entry): entry is ResearchEntry => Boolean(entry))
+    .sort((a, b) => a.order - b.order);
 };
 
-const researchQuestions = [
-  readResearchEntry({ id: 'questions-programmable-lattices', fileName: 'questions-programmable-lattices.txt', fallbackTitle: 'Programmable lattices' }),
-  readResearchEntry({ id: 'questions-correlated-phases', fileName: 'questions-correlated-phases.txt', fallbackTitle: 'Correlated phases' }),
-  readResearchEntry({ id: 'questions-theory-design', fileName: 'questions-theory-design.txt', fallbackTitle: 'Theory + design' }),
-];
+const researchQuestions = readResearchEntries('questions', [
+  'Programmable lattices',
+  'Correlated phases',
+  'Theory + design',
+]);
 
-const experimentalApproaches = [
-  readResearchEntry({ id: 'approaches-metasurface-modes', fileName: 'approaches-metasurface-modes.txt', fallbackTitle: 'Metasurface modes' }),
-  readResearchEntry({ id: 'approaches-quantum-devices', fileName: 'approaches-quantum-devices.txt', fallbackTitle: 'Quantum devices' }),
-];
+const experimentalApproaches = readResearchEntries('approaches', [
+  'Metasurface modes',
+  'Quantum devices',
+]);
 ---
 
 <BaseLayout title="Research | QMM Lab" description="Research themes and projects from QMM Lab.">
@@ -39,9 +66,12 @@ const experimentalApproaches = [
     </div>
     <div class="research-card-grid">
       {researchQuestions.map((entry) => (
-        <article class="panel research-entry" id={entry.id}>
-          <h2>{entry.title}</h2>
-          {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        <article class:list={["panel", "research-entry", entry.image && "has-image"]} id={entry.id}>
+          {entry.image && <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />}
+          <div class="research-entry-copy">
+            <h2>{entry.title}</h2>
+            {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
         </article>
       ))}
     </div>
@@ -53,9 +83,12 @@ const experimentalApproaches = [
     </div>
     <div class="research-card-grid">
       {experimentalApproaches.map((entry) => (
-        <article class="panel research-entry" id={entry.id}>
-          <h2>{entry.title}</h2>
-          {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        <article class:list={["panel", "research-entry", entry.image && "has-image"]} id={entry.id}>
+          {entry.image && <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />}
+          <div class="research-entry-copy">
+            <h2>{entry.title}</h2>
+            {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
         </article>
       ))}
     </div>
@@ -82,7 +115,32 @@ const experimentalApproaches = [
     scroll-margin-top: 5rem;
   }
 
+  .research-entry.has-image {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: start;
+    gap: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  .research-entry-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 18px;
+    object-fit: cover;
+    background: var(--accent-soft);
+  }
+
+  .research-entry-copy p {
+    text-align: justify;
+  }
+
   .research-entry p:last-child {
     margin-bottom: 0;
+  }
+
+  @media (max-width: 760px) {
+    .research-entry.has-image {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
