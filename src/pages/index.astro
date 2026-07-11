@@ -67,26 +67,44 @@ const newsItems = existsSync(newsDir)
       .sort((a, b) => b.id.localeCompare(a.id))
   : [];
 
+const researchDir = join(process.cwd(), 'public', 'research');
 const snapshotsDir = join(process.cwd(), 'public', 'home', 'snapshots');
 const snapshotPattern = /^(questions|approaches)(\d+)_snapshot_(.+)\.([^.]+)$/i;
-const researchSlides = existsSync(snapshotsDir)
-  ? readdirSync(snapshotsDir)
-      .map((fileName) => {
-        const match = fileName.match(snapshotPattern);
-        if (!match || !imageExtensions.has(`.${match[4].toLowerCase()}`)) return null;
-        const section = match[1].toLowerCase();
-        const number = Number(match[2]);
-        return {
-          title: section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`,
-          caption: 'Research snapshot',
-          image: `/home/snapshots/${fileName}`,
-          href: `/research/#${section}${number}`,
-          randomKey: Math.random(),
-        };
-      })
-      .filter((slide): slide is { title: string; caption: string; image: string; href: string; randomKey: number } => Boolean(slide))
-      .sort((a, b) => a.randomKey - b.randomKey)
-  : [];
+const snapshotFiles = existsSync(snapshotsDir) ? readdirSync(snapshotsDir) : [];
+const researchFiles = existsSync(researchDir) ? readdirSync(researchDir) : [];
+const snapshotPlaceholders = researchFiles
+  .map((fileName) => {
+    const match = fileName.match(/^(questions|approaches)(\d+)_(.+)\.txt$/i);
+    if (!match) return null;
+    const section = match[1].toLowerCase();
+    const number = Number(match[2]);
+    const title = readFileSync(join(researchDir, fileName), 'utf8').trim().split(/\r?\n\r?\n/)[0]?.trim()
+      || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`);
+    return { section, number, title, image: '' };
+  })
+  .filter((slide): slide is { section: string; number: number; title: string; image: string } => Boolean(slide));
+const snapshotImages = snapshotFiles
+  .map((fileName) => {
+    const match = fileName.match(snapshotPattern);
+    if (!match || !imageExtensions.has(`.${match[4].toLowerCase()}`)) return null;
+    const section = match[1].toLowerCase();
+    const number = Number(match[2]);
+    return {
+      section,
+      number,
+      title: section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`,
+      image: `/home/snapshots/${fileName}`,
+    };
+  })
+  .filter((slide): slide is { section: string; number: number; title: string; image: string } => Boolean(slide));
+const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPlaceholders)
+  .map((slide) => ({
+    ...slide,
+    caption: slide.image ? 'Research snapshot' : 'Snapshot image coming soon',
+    href: `/research/#${slide.section}${slide.number}`,
+    randomKey: Math.random(),
+  }))
+  .sort((a, b) => a.randomKey - b.randomKey);
 ---
 
 <BaseLayout title="QMM Lab" description="Quantum Meta-Matter research group website.">
@@ -174,7 +192,11 @@ const researchSlides = existsSync(snapshotsDir)
             <div class="carousel-track">
             {[...researchSlides, ...researchSlides, ...researchSlides].map((slide) => (
               <a class="research-slide" href={slide.href}>
-                <img class="snapshot-image" src={slide.image} alt={slide.title} loading="lazy" />
+                {slide.image ? (
+                  <img class="snapshot-image" src={slide.image} alt={slide.title} loading="lazy" />
+                ) : (
+                  <div class="snapshot-placeholder" aria-hidden="true"></div>
+                )}
                 <div>
                   <h3>{slide.title}</h3>
                   <p>{slide.caption}</p>
@@ -502,16 +524,18 @@ const researchSlides = existsSync(snapshotsDir)
 
   .highlight-image-link {
     display: block;
+    height: 100%;
     color: inherit;
     text-decoration: none;
   }
 
-  .snapshot-image {
+  .snapshot-image,
+  .snapshot-placeholder {
     width: 100%;
     height: 230px;
     border-radius: 18px;
     object-fit: cover;
-    background: #fffdfd;
+    background: linear-gradient(135deg, #dddddd, #f1f1f1);
   }
 
   .dummy-art {

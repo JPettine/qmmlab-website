@@ -1,5 +1,5 @@
-Test title
+Symmetry as an ultrafast probe
 
-Test paragraph content, brief description of work goes here.
+Terahertz bursts emitted after a laser pulse can reveal hidden symmetry, charge motion, and collective dynamics in quantum materials. This review frames THz emission as a powerful way to watch matter respond on femtosecond timescales while guiding the design of structured materials and next-generation THz systems.
 
-https://www.nature.com/articles/s41586-024-07037-4
+https://www.nature.com/articles/s41377-023-01163-w

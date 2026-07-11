@@ -66,8 +66,12 @@ const experimentalApproaches = readResearchEntries('approaches', [
     </div>
     <div class="research-card-grid">
       {researchQuestions.map((entry) => (
-        <article class:list={["panel", "research-entry", entry.image && "has-image"]} id={entry.id}>
-          {entry.image && <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />}
+        <article class:list={["panel", "research-entry", "has-image", !entry.image && "has-placeholder"]} id={entry.id}>
+          {entry.image ? (
+            <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
+          ) : (
+            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+          )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
             {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
@@ -83,8 +87,12 @@ const experimentalApproaches = readResearchEntries('approaches', [
     </div>
     <div class="research-card-grid">
       {experimentalApproaches.map((entry) => (
-        <article class:list={["panel", "research-entry", entry.image && "has-image"]} id={entry.id}>
-          {entry.image && <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />}
+        <article class:list={["panel", "research-entry", "has-image", !entry.image && "has-placeholder"]} id={entry.id}>
+          {entry.image ? (
+            <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
+          ) : (
+            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+          )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
             {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
@@ -128,6 +136,10 @@ const experimentalApproaches = readResearchEntries('approaches', [
     border-radius: 18px;
     object-fit: cover;
     background: var(--accent-soft);
+  }
+
+  .research-entry-placeholder {
+    background: linear-gradient(135deg, #dddddd, #f1f1f1);
   }
 
   .research-entry-copy p {

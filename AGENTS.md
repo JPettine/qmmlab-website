@@ -66,3 +66,8 @@ At the end of each task, report:
 - Do not create image or other binary files in the repository for the user, because generated binary assets can cause errors when creating a PR.
 - If the user asks for new image files, remind them of this PR issue before proceeding when possible.
 - Prefer page-native visuals made from HTML/CSS/SVG markup when they fit the request, or prepare the code/framework and ask the user to add their own image files manually.
+
+## People photos
+
+- Frame profile photos so faces are comfortably zoomed in at roughly the level of Yunfan Hu's current portrait.
+- Avoid cropping off the tops of heads; prefer adjusting page markup/CSS object positioning over modifying image files.
