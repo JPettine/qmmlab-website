@@ -73,17 +73,33 @@ const snapshotsDir = join(process.cwd(), 'public', 'home', 'snapshots');
 const snapshotPattern = /^(questions|approaches)(\d+)_snapshot_(.+)\.([^.]+)$/i;
 const snapshotFiles = existsSync(snapshotsDir) ? readdirSync(snapshotsDir) : [];
 const researchFiles = existsSync(researchDir) ? readdirSync(researchDir) : [];
+const researchMetadata = new Map<string, { title: string; caption: string }>();
+
+const readResearchMetadata = (section: string, number: number, fileName: string) => {
+  const fallbackTitle = section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`;
+  const content = readFileSync(join(researchDir, fileName), 'utf8');
+  const firstLine = content.split(/\r?\n/).map((line) => line.trim()).find(Boolean);
+  const snippetLine = content
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => /^Home snippet:/i.test(line))
+    .at(-1);
+
+  return {
+    title: firstLine || fallbackTitle,
+    caption: snippetLine?.replace(/^Home snippet:\s*/i, '') || 'Snapshot image coming soon',
+  };
+};
+
 const snapshotPlaceholders = researchFiles
   .map((fileName) => {
     const match = fileName.match(/^(questions|approaches)(\d+)_(.+)\.txt$/i);
     if (!match) return null;
     const section = match[1].toLowerCase();
     const number = Number(match[2]);
-    const blocks = readFileSync(join(researchDir, fileName), 'utf8').trim().split(/\r?\n\r?\n/).map((part) => part.trim()).filter(Boolean);
-    const title = blocks[0] || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`);
-    const snippetBlock = blocks.find((block) => block.toLowerCase().startsWith('home snippet:'));
-    const caption = snippetBlock?.replace(/^Home snippet:\s*/i, '') || 'Snapshot image coming soon';
-    return { section, number, title, image: '', caption };
+    const metadata = readResearchMetadata(section, number, fileName);
+    researchMetadata.set(`${section}${number}`, metadata);
+    return { section, number, title: metadata.title, image: '', caption: metadata.caption };
   })
   .filter((slide): slide is { section: string; number: number; title: string; image: string; caption: string } => Boolean(slide));
 const snapshotImages = snapshotFiles
@@ -92,12 +108,13 @@ const snapshotImages = snapshotFiles
     if (!match || !imageExtensions.has(`.${match[4].toLowerCase()}`)) return null;
     const section = match[1].toLowerCase();
     const number = Number(match[2]);
+    const metadata = researchMetadata.get(`${section}${number}`);
     return {
       section,
       number,
-      title: section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`,
+      title: metadata?.title || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`),
       image: `/home/snapshots/${fileName}`,
-      caption: 'Research snapshot',
+      caption: metadata?.caption || 'Research snapshot',
     };
   })
   .filter((slide): slide is { section: string; number: number; title: string; image: string; caption: string } => Boolean(slide));

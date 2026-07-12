@@ -30,9 +30,11 @@ Entry title
 First paragraph.
 
 Second paragraph.
+
+Home snippet: Short home-page carousel description.
 ```
 
-The first paragraph block becomes the card title. Later paragraph blocks become justified body text.
+The first paragraph block becomes the card title. Later paragraph blocks become justified body text. For home-page snapshots, the carousel label is the first non-empty line of the matching research text file, and the descriptive snippet is the last line that starts with `Home snippet:` with that prefix removed.
 
 ## Image formats and dimensions
 
