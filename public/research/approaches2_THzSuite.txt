@@ -1,5 +1,5 @@
 Time-resolved THz spectroscopy suite
 
-Upcoming capability, check in again soon!
+Details coming soon!
 
 Home snippet: Versatile spectroscopy suite for probing the low-energy electrodynamics of quantum materials.

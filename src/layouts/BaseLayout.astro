@@ -15,7 +15,7 @@ const navItems = [
     href: '/research/',
     label: 'Research',
     children: [
-      { href: '/research/#research-questions', label: 'Questions' },
+      { href: '/research/#research-questions', label: 'Topics' },
       { href: '/research/#experimental-approaches', label: 'Approaches' },
     ],
   },
@@ -119,7 +119,7 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
 
     const startAutoAdvance = () => {
       if (autoAdvanceTimer !== undefined) return;
-      autoAdvanceTimer = window.setInterval(advanceSlide, 4000);
+      autoAdvanceTimer = window.setInterval(advanceSlide, 3000);
     };
 
     const stopAutoAdvance = () => {
