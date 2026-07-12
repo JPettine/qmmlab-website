@@ -1,5 +1,0 @@
-Quantum devices
-
-Placeholder longer explanation for an Experimental Approaches entry connected to the Quantum devices home-page snapshot.
-
-Home snippet: Dummy graphic placeholder for measurement platforms.
