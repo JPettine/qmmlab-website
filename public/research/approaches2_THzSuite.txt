@@ -1,5 +1,5 @@
-Time-resolved THz spectroscopy suite
+THz spectroscopy suite
 
-Details coming soon!
+Upcoming capability combining optical and terahertz pump and probe light to study low-energy (few-meV) collective excitations and correlation gaps. Check in again soon!
 
 Home snippet: Versatile spectroscopy suite for probing the low-energy electrodynamics of quantum materials.

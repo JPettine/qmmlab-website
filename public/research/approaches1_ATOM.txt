@@ -1,5 +1,5 @@
-ATOM: Autonomous Transient Optical Microscopy
+Autonomous Transient Optical Microscopy (ATOM)
 
-Details coming soon!
+We are currently developing a highly automated system for ultrafast optical pump-probe microscopy and spectroscopy of quantum materials. Between the broad set of incident laser parameters (intensities, wavelengths, polarizations, positions, and time delay), quantum material properties and phases under different sample conditions (temperature, magnetic field vector, applied voltages), and variety of possible probe readouts (transient reflectivity, photocurrent, photoluminescence, polarization rotation, nonlinear generation, and so forth) we often only have access to a small fraction of the insights a material has to offer. By interfacing the automated parameter tuning with a large language model, ATOM will explore and identify key regions of this parameter space and vectors between them, accelerating the pace of discovery.
 
 Home snippet: A versatile new ultrafast optical microscopy platform for AI-driven science!

@@ -1,5 +1,10 @@
 High-precision nanofabrication
 
-Details coming soon!
+Electron beam lithograpy (EBL) has been developed for decades within the semiconductor industry as a technique for writing exceptionally fine transistor features in the masks used for wafer-scale extreme ultraviolet exposure. While too slow to be useful for wafer-scale writing itself, EBL has become a workhorese technique in device physics, metamaterials, and other fields where direct (maskless) writing of nanoscale features over small areas is needed. This allows for the on-demand patterning of structures and symmetries on top of (or into) various quantum materials. Yet the typical tens- to hundreds-of-nanometer feature sizes are still hundreds to thousands of atoms across! How can we hope to influence the fundamental atomic lattice-scale interactions that determine emergent quantum material phases with structures that remain, in relative terms, colossal?
+
+In the QMM Lab, we are pursuing several directions to overcome this crucial scale mismatch: (i) Pushing modern EBL techniques to their limit to achieve few-nanometer feature sizes and tens-of-nanometer superlattice constants, on the scale of electron coherence in many materials (see 'Designer superlattices). (ii) Imparting the symmetry of larger structures down to the atomic scale through ultrafast excitations (see 'Nano-acoustic strain'). (iii) Using cavities that are much larger than the lattice but much smaller than the wavelength of resonant light fields to concentrate radiation down and drive novel properties and responses (see 'Vectorial nanocurrents' and 'Cavities').
+
+Image: Atomic force micrograph of silicon dioxide nanopillar array, with feature sizes down to 5 nm (a mere ~10 SiO2 unit cells across) and likely smaller, limited by the probing tip resolution.
+
 
 Home snippet: Lithographic patterning of materials and metasurfaces with < 10 nm feature sizes.
