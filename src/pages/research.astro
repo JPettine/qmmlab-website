@@ -71,7 +71,9 @@ const experimentalApproaches = readResearchEntries('approaches', [
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
           ) : (
-            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+            <div class="research-entry-image research-entry-placeholder" aria-hidden={entry.id !== 'approaches2'}>
+              {entry.id === 'approaches2' && <span>Coming soon!</span>}
+            </div>
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
@@ -92,7 +94,9 @@ const experimentalApproaches = readResearchEntries('approaches', [
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
           ) : (
-            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+            <div class="research-entry-image research-entry-placeholder" aria-hidden={entry.id !== 'approaches2'}>
+              {entry.id === 'approaches2' && <span>Coming soon!</span>}
+            </div>
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
@@ -140,7 +144,14 @@ const experimentalApproaches = readResearchEntries('approaches', [
   }
 
   .research-entry-placeholder {
+    display: grid;
+    place-items: center;
     background: linear-gradient(135deg, #dddddd, #f1f1f1);
+    color: var(--ink-soft);
+    font-family: var(--font-heading);
+    font-size: clamp(1.1rem, 2vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   .research-entry-copy p {
