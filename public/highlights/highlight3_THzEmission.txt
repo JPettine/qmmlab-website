@@ -1,0 +1,5 @@
+Terahertz emission as an ultrafast symmetry probe
+
+Terahertz bursts emitted after laser pulse excitation can reveal hidden symmetries, charge motion, and collective dynamics in quantum materials. We utilize terahertz emission and transmission spectroscopies as a powerful way to observe these dynamics on sub-picosecond timescales.
+
+https://www.nature.com/articles/s41377-023-01163-w
