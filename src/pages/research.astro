@@ -136,8 +136,20 @@ const experimentalApproaches = readResearchEntries('approaches', [
     aspect-ratio: 4 / 3;
     border-radius: 18px;
     object-fit: contain;
-    padding: 0.65rem;
-    background: var(--accent-soft);
+    background: var(--research-image-bg, var(--accent-soft));
+  }
+
+  #questions1 .research-entry-image {
+    --research-image-bg: #f5f4f4;
+  }
+
+  #approaches1 .research-entry-image {
+    --research-image-bg: #f4f4f4;
+  }
+
+  #approaches3 .research-entry-image {
+    --research-image-bg: #2d292b;
+    object-fit: cover;
   }
 
   .research-entry-placeholder {
@@ -154,6 +166,11 @@ const experimentalApproaches = readResearchEntries('approaches', [
 
   .research-entry-copy p {
     text-align: justify;
+  }
+
+  .research-entry-copy sub {
+    font-size: 0.65em;
+    line-height: 0;
   }
 
   .research-entry p:last-child {
