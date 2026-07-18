@@ -116,6 +116,8 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
 
     const advanceSlide = () => showSlide((currentSlide + 1) % slideCount);
     let autoAdvanceTimer: number | undefined;
+    let dotClickResumeTimer: number | undefined;
+    let isHoveringCarousel = false;
 
     const startAutoAdvance = () => {
       if (autoAdvanceTimer !== undefined) return;
@@ -128,21 +130,45 @@ const isActiveHref = (href: string) => href === '/' ? currentPath === '/' : curr
       autoAdvanceTimer = undefined;
     };
 
+    const activeElementIsDot = () =>
+      document.activeElement instanceof HTMLElement && document.activeElement.hasAttribute('data-highlight-dot');
+
     const resumeWhenInactive = () => {
       window.setTimeout(() => {
-        if (carousel.matches(':hover') || carousel.contains(document.activeElement)) return;
+        if (isHoveringCarousel || (carousel.contains(document.activeElement) && !activeElementIsDot())) return;
         startAutoAdvance();
       }, 0);
     };
 
+    const scheduleDotClickResume = () => {
+      if (dotClickResumeTimer !== undefined) window.clearTimeout(dotClickResumeTimer);
+      dotClickResumeTimer = window.setTimeout(() => {
+        dotClickResumeTimer = undefined;
+        if (!isHoveringCarousel) startAutoAdvance();
+      }, 2000);
+    };
+
     startAutoAdvance();
-    carousel.addEventListener('pointerenter', stopAutoAdvance);
-    carousel.addEventListener('pointerleave', resumeWhenInactive);
-    carousel.addEventListener('focusin', stopAutoAdvance);
+    carousel.addEventListener('pointerenter', () => {
+      isHoveringCarousel = true;
+      stopAutoAdvance();
+    });
+    carousel.addEventListener('pointerleave', () => {
+      isHoveringCarousel = false;
+      resumeWhenInactive();
+    });
+    carousel.addEventListener('focusin', (event) => {
+      const targetIsDot = event.target instanceof HTMLElement && event.target.hasAttribute('data-highlight-dot');
+      if (!targetIsDot) stopAutoAdvance();
+    });
     carousel.addEventListener('focusout', resumeWhenInactive);
 
     dots.forEach((dot, index) => {
-      dot.addEventListener('click', () => showSlide(index));
+      dot.addEventListener('click', () => {
+        showSlide(index);
+        stopAutoAdvance();
+        scheduleDotClickResume();
+      });
     });
   });
 </script>
