@@ -71,11 +71,11 @@ const experimentalApproaches = readResearchEntries('approaches', [
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
           ) : (
-            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+            <div class="research-entry-image research-entry-placeholder">{entry.id === 'approaches2' ? 'Coming soon!' : ''}</div>
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
           </div>
         </article>
       ))}
@@ -92,11 +92,11 @@ const experimentalApproaches = readResearchEntries('approaches', [
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
           ) : (
-            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+            <div class="research-entry-image research-entry-placeholder">{entry.id === 'approaches2' ? 'Coming soon!' : ''}</div>
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
           </div>
         </article>
       ))}
@@ -135,16 +135,42 @@ const experimentalApproaches = readResearchEntries('approaches', [
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: 18px;
+    object-fit: contain;
+    background: var(--research-image-bg, var(--accent-soft));
+  }
+
+  #questions1 .research-entry-image {
+    --research-image-bg: #ffffff;
+  }
+
+  #approaches1 .research-entry-image {
+    --research-image-bg: #f4f4f4;
+  }
+
+  #approaches3 .research-entry-image {
+    --research-image-bg: #2d292b;
     object-fit: cover;
-    background: var(--accent-soft);
   }
 
   .research-entry-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 0;
     background: linear-gradient(135deg, #dddddd, #f1f1f1);
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .research-entry-copy p {
     text-align: justify;
+  }
+
+  .research-entry-copy sub {
+    font-size: 0.65em;
+    line-height: 0;
   }
 
   .research-entry p:last-child {
