@@ -71,11 +71,11 @@ const experimentalApproaches = readResearchEntries('approaches', [
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
           ) : (
-            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+            <div class="research-entry-image research-entry-placeholder">{entry.id === 'approaches2' ? 'Coming soon!' : ''}</div>
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
           </div>
         </article>
       ))}
@@ -92,11 +92,11 @@ const experimentalApproaches = readResearchEntries('approaches', [
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
           ) : (
-            <div class="research-entry-image research-entry-placeholder" aria-hidden="true"></div>
+            <div class="research-entry-image research-entry-placeholder">{entry.id === 'approaches2' ? 'Coming soon!' : ''}</div>
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
           </div>
         </article>
       ))}
@@ -135,12 +135,21 @@ const experimentalApproaches = readResearchEntries('approaches', [
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: 18px;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 0.65rem;
     background: var(--accent-soft);
   }
 
   .research-entry-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 0;
     background: linear-gradient(135deg, #dddddd, #f1f1f1);
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .research-entry-copy p {
