@@ -9,7 +9,7 @@ type ResearchEntry = {
   order: number;
   label: string;
   title: string;
-  paragraphs: string[];
+  paragraphs: { text: string; isImageCaption: boolean }[];
   image: string;
 };
 
@@ -27,10 +27,15 @@ const readResearchEntries = (section: 'questions' | 'approaches', fallbackTitles
       const label = match[2];
       const content = readFileSync(join(researchDir, fileName), 'utf8').trim();
       const [title = fallbackTitles[order - 1] ?? `${section} ${order}`, ...paragraphBlocks] = content
-        .split(/\r?\n\r?\n/)
+        .split(/\r?\n[ \t]*\r?\n/)
         .map((part) => part.trim())
         .filter(Boolean);
-      const paragraphs = paragraphBlocks.filter((paragraph) => !paragraph.toLowerCase().startsWith('home snippet:'));
+      const displayParagraphs = paragraphBlocks.filter((paragraph) => !paragraph.toLowerCase().startsWith('home snippet:'));
+      const imageCaptionIndex = /^Image:/i.test(displayParagraphs.at(-1) ?? '') ? displayParagraphs.length - 1 : -1;
+      const paragraphs = displayParagraphs.map((paragraph, index) => ({
+        text: paragraph,
+        isImageCaption: index === imageCaptionIndex,
+      }));
       const imageFile = files.find((candidate) => {
         const parsed = parse(candidate);
         return parsed.name === `${section}${order}_${label}` && imageExtensions.has(parsed.ext.toLowerCase());
@@ -77,7 +82,15 @@ const experimentalApproaches = readResearchEntries('approaches', [
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p><FormattedText text={paragraph} /></p>)}
+            {entry.paragraphs.map((paragraph) => (
+              <p>
+                {paragraph.isImageCaption ? (
+                  <><strong>Image</strong>: <FormattedText text={paragraph.text.replace(/^Image:\s*/i, '')} /></>
+                ) : (
+                  <FormattedText text={paragraph.text} />
+                )}
+              </p>
+            ))}
           </div>
         </article>
       ))}
@@ -98,7 +111,15 @@ const experimentalApproaches = readResearchEntries('approaches', [
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p><FormattedText text={paragraph} /></p>)}
+            {entry.paragraphs.map((paragraph) => (
+              <p>
+                {paragraph.isImageCaption ? (
+                  <><strong>Image</strong>: <FormattedText text={paragraph.text.replace(/^Image:\s*/i, '')} /></>
+                ) : (
+                  <FormattedText text={paragraph.text} />
+                )}
+              </p>
+            ))}
           </div>
         </article>
       ))}
@@ -138,19 +159,11 @@ const experimentalApproaches = readResearchEntries('approaches', [
     aspect-ratio: 4 / 3;
     border-radius: 18px;
     object-fit: contain;
-    background: var(--research-image-bg, var(--accent-soft));
+    background: #ffffff;
   }
 
-  #questions1 .research-entry-image {
-    --research-image-bg: #ffffff;
-  }
-
-  #approaches1 .research-entry-image {
-    --research-image-bg: #f4f4f4;
-  }
 
   #approaches3 .research-entry-image {
-    --research-image-bg: #2d292b;
     object-fit: cover;
   }
 

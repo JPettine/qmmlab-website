@@ -10,7 +10,7 @@ const aboutContent = existsSync(aboutPath)
   ? readFileSync(aboutPath, 'utf8').trim()
   : '';
 const [aboutTitle = 'A clean home for quantum meta-matter research', ...aboutParagraphs] = aboutContent
-  .split(/\r?\n\r?\n/)
+  .split(/\r?\n[ \t]*\r?\n/)
   .map((part) => part.trim())
   .filter(Boolean);
 
@@ -29,7 +29,7 @@ const highlightSlides = existsSync(highlightsDir)
         const label = match[2];
         const textPath = join(highlightsDir, `highlight${slideNumber}_${label}.txt`);
         const textBlocks = existsSync(textPath)
-          ? readFileSync(textPath, 'utf8').trim().split(/\r?\n\r?\n/).map((part) => part.trim()).filter(Boolean)
+          ? readFileSync(textPath, 'utf8').trim().split(/\r?\n[ \t]*\r?\n/).map((part) => part.trim()).filter(Boolean)
           : [];
         const possibleLink = textBlocks.at(-1) ?? '';
         const href = highlightLinkPattern.test(possibleLink) ? possibleLink : '';

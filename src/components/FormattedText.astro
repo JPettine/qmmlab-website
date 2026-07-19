@@ -3,35 +3,33 @@ type Props = {
   text: string;
 };
 
+type TextToken = {
+  type: 'text' | 'sub' | 'sup';
+  value: string;
+};
+
 const { text } = Astro.props;
 
-const escapeHtml = (value: string) => value
-  .replaceAll('&', '&amp;')
-  .replaceAll('<', '&lt;')
-  .replaceAll('>', '&gt;')
-  .replaceAll('"', '&quot;')
-  .replaceAll("'", '&#39;');
-
-const renderMath = (math: string) => math
+const renderMathTokens = (math: string) => math
   .split(/(_\{[^}]+\}|\^\{[^}]+\}|_[A-Za-z0-9]+|\^[A-Za-z0-9]+)/g)
-  .map((part) => {
-    if (!part) return '';
+  .filter(Boolean)
+  .map((part): TextToken => {
     const marker = part[0];
-    if (marker !== '_' && marker !== '^') return escapeHtml(part);
+    if (marker !== '_' && marker !== '^') return { type: 'text', value: part };
 
-    const value = escapeHtml(part[1] === '{' ? part.slice(2, -1) : part.slice(1));
-    return marker === '_' ? `<sub>${value}</sub>` : `<sup>${value}</sup>`;
-  })
-  .join('');
+    const value = part[1] === '{' ? part.slice(2, -1) : part.slice(1);
+    return { type: marker === '_' ? 'sub' : 'sup', value };
+  });
 
-const html = text
+const tokens = text
   .split(/(\$[^$]+\$)/g)
-  .map((part) => {
-    if (!part) return '';
-    if (part.startsWith('$') && part.endsWith('$')) return renderMath(part.slice(1, -1));
-    return escapeHtml(part);
-  })
-  .join('');
+  .filter(Boolean)
+  .flatMap((part): TextToken[] => {
+    if (part.startsWith('$') && part.endsWith('$')) return renderMathTokens(part.slice(1, -1));
+    return [{ type: 'text', value: part }];
+  });
 ---
 
-<Fragment set:html={html} />
+{tokens.map((token) => (
+  token.type === 'sub' ? <sub>{token.value}</sub> : token.type === 'sup' ? <sup>{token.value}</sup> : token.value
+))}
