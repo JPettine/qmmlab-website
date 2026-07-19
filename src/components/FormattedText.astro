@@ -1,0 +1,35 @@
+---
+type Props = {
+  text: string;
+};
+
+type TextToken = {
+  type: 'text' | 'sub' | 'sup';
+  value: string;
+};
+
+const { text } = Astro.props;
+
+const renderMathTokens = (math: string) => math
+  .split(/(_\{[^}]+\}|\^\{[^}]+\}|_[A-Za-z0-9]+|\^[A-Za-z0-9]+)/g)
+  .filter(Boolean)
+  .map((part): TextToken => {
+    const marker = part[0];
+    if (marker !== '_' && marker !== '^') return { type: 'text', value: part };
+
+    const value = part[1] === '{' ? part.slice(2, -1) : part.slice(1);
+    return { type: marker === '_' ? 'sub' : 'sup', value };
+  });
+
+const tokens = text
+  .split(/(\$[^$]+\$)/g)
+  .filter(Boolean)
+  .flatMap((part): TextToken[] => {
+    if (part.startsWith('$') && part.endsWith('$')) return renderMathTokens(part.slice(1, -1));
+    return [{ type: 'text', value: part }];
+  });
+---
+
+{tokens.map((token) => (
+  token.type === 'sub' ? <sub>{token.value}</sub> : token.type === 'sup' ? <sup>{token.value}</sup> : token.value
+))}
