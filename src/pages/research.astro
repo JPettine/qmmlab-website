@@ -15,7 +15,31 @@ type ResearchEntry = {
 const researchDir = join(process.cwd(), 'public', 'research');
 const imageExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '.svg']);
 
-const readResearchEntries = (section: 'questions' | 'approaches', fallbackTitles: string[]) => {
+const escapeHTML = (value: string) => value
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('\"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+const formatLatexExpression = (value: string) => escapeHTML(value)
+  .replace(/^_\{([^}]+)\}$/, '<sub>$1</sub>')
+  .replace(/^_([A-Za-z0-9]+)$/, '<sub>$1</sub>')
+  .replace(/^\^\{([^}]+)\}$/, '<sup>$1</sup>')
+  .replace(/^\^([A-Za-z0-9]+)$/, '<sup>$1</sup>')
+  .replace(/([A-Za-z0-9)])_\{([^}]+)\}/g, '$1<sub>$2</sub>')
+  .replace(/([A-Za-z0-9)])_([A-Za-z0-9]+)/g, '$1<sub>$2</sub>')
+  .replace(/([A-Za-z0-9)])\^\{([^}]+)\}/g, '$1<sup>$2</sup>')
+  .replace(/([A-Za-z0-9)])\^([A-Za-z0-9]+)/g, '$1<sup>$2</sup>');
+
+const formatInlineLatex = (value: string) => value
+  .split(/(\$[^$]+\$)/g)
+  .map((part) => part.startsWith('$') && part.endsWith('$')
+    ? formatLatexExpression(part.slice(1, -1))
+    : escapeHTML(part))
+  .join('');
+
+const readResearchEntries = (section: 'topics' | 'approaches', fallbackTitles: string[]) => {
   const files = existsSync(researchDir) ? readdirSync(researchDir) : [];
   return files
     .map((fileName) => {
@@ -48,7 +72,7 @@ const readResearchEntries = (section: 'questions' | 'approaches', fallbackTitles
     .sort((a, b) => a.order - b.order);
 };
 
-const researchQuestions = readResearchEntries('questions', [
+const researchTopics = readResearchEntries('topics', [
   'Programmable lattices',
   'Correlated phases',
   'Theory + design',
@@ -66,7 +90,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
       <p class="eyebrow" id="research-questions-title">Research Topics</p>
     </div>
     <div class="research-card-grid">
-      {researchQuestions.map((entry) => (
+      {researchTopics.map((entry) => (
         <article class:list={["panel", "research-entry", "has-image", !entry.image && "has-placeholder"]} id={entry.id}>
           {entry.image ? (
             <img class="research-entry-image" src={entry.image} alt="" loading="lazy" />
@@ -75,7 +99,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
+            {entry.paragraphs.map((paragraph) => <p set:html={formatInlineLatex(paragraph)} />)}
           </div>
         </article>
       ))}
@@ -96,7 +120,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
+            {entry.paragraphs.map((paragraph) => <p set:html={formatInlineLatex(paragraph)} />)}
           </div>
         </article>
       ))}
@@ -139,7 +163,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
     background: var(--research-image-bg, var(--accent-soft));
   }
 
-  #questions1 .research-entry-image {
+  #topic1 .research-entry-image {
     --research-image-bg: #ffffff;
   }
 

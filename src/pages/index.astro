@@ -70,13 +70,13 @@ const newsItems = existsSync(newsDir)
 
 const researchDir = join(process.cwd(), 'public', 'research');
 const snapshotsDir = join(process.cwd(), 'public', 'home', 'snapshots');
-const snapshotPattern = /^(questions|approaches)(\d+)_snapshot_(.+)\.([^.]+)$/i;
+const snapshotPattern = /^(topics|questions|approaches)(\d+)_snapshot_(.+)\.([^.]+)$/i;
 const snapshotFiles = existsSync(snapshotsDir) ? readdirSync(snapshotsDir) : [];
 const researchFiles = existsSync(researchDir) ? readdirSync(researchDir) : [];
 const researchMetadata = new Map<string, { title: string; caption: string }>();
 
 const readResearchMetadata = (section: string, number: number, fileName: string) => {
-  const fallbackTitle = section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`;
+  const fallbackTitle = section === 'approaches' ? `Experimental approach ${number}` : `Research topic ${number}`;
   const content = readFileSync(join(researchDir, fileName), 'utf8');
   const firstLine = content.split(/\r?\n/).map((line) => line.trim()).find(Boolean);
   const snippetLine = content
@@ -93,9 +93,9 @@ const readResearchMetadata = (section: string, number: number, fileName: string)
 
 const snapshotPlaceholders = researchFiles
   .map((fileName) => {
-    const match = fileName.match(/^(questions|approaches)(\d+)_(.+)\.txt$/i);
+    const match = fileName.match(/^(topics|approaches)(\d+)_(.+)\.txt$/i);
     if (!match) return null;
-    const section = match[1].toLowerCase();
+    const section = match[1].toLowerCase() === 'questions' ? 'topics' : match[1].toLowerCase();
     const number = Number(match[2]);
     const metadata = readResearchMetadata(section, number, fileName);
     researchMetadata.set(`${section}${number}`, metadata);
@@ -106,13 +106,13 @@ const snapshotImages = snapshotFiles
   .map((fileName) => {
     const match = fileName.match(snapshotPattern);
     if (!match || !imageExtensions.has(`.${match[4].toLowerCase()}`)) return null;
-    const section = match[1].toLowerCase();
+    const section = match[1].toLowerCase() === 'questions' ? 'topics' : match[1].toLowerCase();
     const number = Number(match[2]);
     const metadata = researchMetadata.get(`${section}${number}`);
     return {
       section,
       number,
-      title: metadata?.title || (section === 'questions' ? `Research question ${number}` : `Experimental approach ${number}`),
+      title: metadata?.title || (section === 'approaches' ? `Experimental approach ${number}` : `Research topic ${number}`),
       image: `/home/snapshots/${fileName}`,
       caption: metadata?.caption || 'Research snapshot',
     };

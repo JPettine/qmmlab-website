@@ -4,11 +4,11 @@ Research entries are generated from text files in this folder. Optional images c
 
 ## Naming convention
 
-Research question text files:
+Research topic text files:
 
 ```text
-questions1_label.txt
-questions2_label.txt
+topic1_label.txt
+topic2_label.txt
 ```
 
 Experimental approach text files:
@@ -18,9 +18,9 @@ approaches1_label.txt
 approaches2_label.txt
 ```
 
-- The number controls display order and the page anchor (`questions1`, `approaches1`, etc.).
+- The number controls display order and the page anchor (`topic1`, `approaches1`, etc.).
 - The label can be any descriptive text and does not affect ordering.
-- Optional images use the same base name with an allowed image extension, for example `questions1_label.png` or `approaches2_label.jpg`.
+- Optional images use the same base name with an allowed image extension, for example `topic1_label.png` or `approaches2_label.jpg`.
 
 ## Text formatting
 

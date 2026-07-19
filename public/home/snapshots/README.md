@@ -7,14 +7,14 @@ Place snapshot images here to populate the home-page Research snapshots carousel
 Use one of these patterns:
 
 ```text
-questions1_snapshot_label.jpg
+topic1_snapshot_label.jpg
 approaches1_snapshot_label.jpg
 ```
 
-- `questions` or `approaches` connects the snapshot to the corresponding Research page section.
-- The number links the snapshot to the matching Research card anchor, such as `/research/#questions1` or `/research/#approaches1`.
+- `topics` or `approaches` connects the snapshot to the corresponding Research page section.
+- The number links the snapshot to the matching Research card anchor, such as `/research/#topic1` or `/research/#approaches1`.
 - `_snapshot_` is required.
-- The filename label can be any descriptive text and does not affect display order. The carousel display label comes from the first non-empty line of the matching `public/research/questionsX_label.txt` or `public/research/approachesX_label.txt` file.
+- The filename label can be any descriptive text and does not affect display order. The carousel display label comes from the first non-empty line of the matching `public/research/topicX_label.txt` or `public/research/approachesX_label.txt` file.
 
 ## Ordering
 
