@@ -1,0 +1,84 @@
+%PDF-1.4
+%
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 7 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+7 0 obj
+<< /Length 3386 >>
+stream
+BT /F1 18 Tf 54 760 Td (GitHub Pages DNS Setup for QMM Lab Website) Tj ET
+BT /F3 10.5 Tf 54 728 Td (Site URL: https://qmm.labs.stonybrook.edu) Tj ET
+BT /F3 10.5 Tf 54 714 Td (Purpose: Point the Stony Brook subdomain to the QMM Lab website hosted on GitHub) Tj ET
+BT /F3 10.5 Tf 54 700 Td (Pages.) Tj ET
+BT /F1 13 Tf 54 686 Td (Requested DNS change) Tj ET
+BT /F3 10.5 Tf 54 662 Td (Because qmm.labs.stonybrook.edu is a subdomain, GitHub Pages recommends a CNAME DNS) Tj ET
+BT /F3 10.5 Tf 54 648 Td (record, not A records.) Tj ET
+BT /F3 10.5 Tf 54 634 Td (Create/update this DNS record:) Tj ET
+BT /F2 10 Tf 54 620 Td (Record type: CNAME) Tj ET
+BT /F2 10 Tf 54 606 Td (Host/name:   qmm.labs.stonybrook.edu) Tj ET
+BT /F2 10 Tf 54 592 Td (Target:      <GitHub-owner-or-organization>.github.io) Tj ET
+BT /F3 10.5 Tf 54 578 Td (The CNAME target should be the GitHub Pages default domain only, such as) Tj ET
+BT /F3 10.5 Tf 54 564 Td (USERNAME.github.io or ORGANIZATION.github.io. Do not include the repository name in) Tj ET
+BT /F3 10.5 Tf 54 550 Td (the CNAME target.) Tj ET
+BT /F1 13 Tf 54 536 Td (If an IP address is required instead) Tj ET
+BT /F3 10.5 Tf 54 512 Td (GitHub documents A records for apex/root domains, not as the preferred setup for) Tj ET
+BT /F3 10.5 Tf 54 498 Td (subdomains. If campus DNS policy requires IP addresses anyway, GitHub's current Pages) Tj ET
+BT /F3 10.5 Tf 54 484 Td (IPv4 addresses are:) Tj ET
+BT /F2 10 Tf 54 470 Td (185.199.108.153) Tj ET
+BT /F2 10 Tf 54 456 Td (185.199.109.153) Tj ET
+BT /F2 10 Tf 54 442 Td (185.199.110.153) Tj ET
+BT /F2 10 Tf 54 428 Td (185.199.111.153) Tj ET
+BT /F3 10.5 Tf 54 414 Td (Optional IPv6 addresses:) Tj ET
+BT /F2 10 Tf 54 400 Td (2606:50c0:8000::153) Tj ET
+BT /F2 10 Tf 54 386 Td (2606:50c0:8001::153) Tj ET
+BT /F2 10 Tf 54 372 Td (2606:50c0:8002::153) Tj ET
+BT /F2 10 Tf 54 358 Td (2606:50c0:8003::153) Tj ET
+BT /F1 13 Tf 54 344 Td (GitHub repository status) Tj ET
+BT /F3 10.5 Tf 54 320 Td (The GitHub Pages custom domain has been set to qmm.labs.stonybrook.edu.) Tj ET
+BT /F3 10.5 Tf 54 306 Td (The website repository is configured to deploy through GitHub Pages using GitHub) Tj ET
+BT /F3 10.5 Tf 54 292 Td (Actions, and the site build includes the custom domain value.) Tj ET
+BT /F1 13 Tf 54 278 Td (Verification after DNS is updated) Tj ET
+BT /F3 10.5 Tf 54 254 Td (After DNS propagation, verify the record with:) Tj ET
+BT /F2 10 Tf 54 240 Td (dig qmm.labs.stonybrook.edu +nostats +nocomments +nocmd) Tj ET
+BT /F3 10.5 Tf 54 226 Td (Expected result for the recommended setup: the output should show a CNAME chain from) Tj ET
+BT /F3 10.5 Tf 54 212 Td (qmm.labs.stonybrook.edu to <GitHub-owner-or-organization>.github.io and then to GitHub) Tj ET
+BT /F3 10.5 Tf 54 198 Td (Pages infrastructure.) Tj ET
+BT /F3 10.5 Tf 54 184 Td (DNS changes can take up to 24 hours to propagate. Once GitHub detects the DNS) Tj ET
+BT /F3 10.5 Tf 54 170 Td (configuration, HTTPS should be enabled/enforced in the repository's GitHub Pages) Tj ET
+BT /F3 10.5 Tf 54 156 Td (settings.) Tj ET
+BT /F1 13 Tf 54 142 Td (Source) Tj ET
+BT /F3 10.5 Tf 54 118 Td (GitHub documentation: Managing a custom domain for your GitHub Pages site) Tj ET
+BT /F3 10.5 Tf 54 104 Td (https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-) Tj ET
+BT /F3 10.5 Tf 54 90 Td (site/managing-a-custom-domain-for-your-github-pages-site) Tj ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000267 00000 n 
+0000000342 00000 n 
+0000000410 00000 n 
+0000000480 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+3918
+%%EOF
