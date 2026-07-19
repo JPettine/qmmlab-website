@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FormattedText from '../components/FormattedText.astro';
 
 
 const aboutPath = join(process.cwd(), 'public', 'home', 'about.txt');
@@ -126,6 +127,7 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
     randomKey: Math.random(),
   }))
   .sort((a, b) => a.randomKey - b.randomKey);
+
 ---
 
 <BaseLayout title="QMM Lab" description="Quantum Meta-Matter research group website.">
@@ -167,7 +169,7 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
               )}
               <figcaption class="highlight-caption">
                 <strong>{slide.summary}</strong>
-                {slide.description && <p>{slide.description}</p>}
+                {slide.description && <p><FormattedText text={slide.description} /></p>}
               </figcaption>
             </figure>
           ))}
@@ -195,7 +197,7 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
     <div class="about-group">
       <h1 id="about-title">{aboutTitle}</h1>
       <div class="about-copy">
-        {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+        {aboutParagraphs.map((paragraph) => <p><FormattedText text={paragraph} /></p>)}
       </div>
     </div>
   </section>
@@ -220,7 +222,7 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
                 )}
                 <div>
                   <h3>{slide.title}</h3>
-                  <p>{slide.caption}</p>
+                  <p><FormattedText text={slide.caption} /></p>
                 </div>
               </a>
             ))}

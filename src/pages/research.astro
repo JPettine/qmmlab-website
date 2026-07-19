@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FormattedText from '../components/FormattedText.astro';
 
 type ResearchEntry = {
   id: string;
@@ -58,6 +59,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
   'Metasurface modes',
   'Quantum devices',
 ]);
+
 ---
 
 <BaseLayout title="Research | QMM Lab" description="Research themes and projects from QMM Lab.">
@@ -75,7 +77,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
+            {entry.paragraphs.map((paragraph) => <p><FormattedText text={paragraph} /></p>)}
           </div>
         </article>
       ))}
@@ -96,7 +98,7 @@ const experimentalApproaches = readResearchEntries('approaches', [
           )}
           <div class="research-entry-copy">
             <h2>{entry.title}</h2>
-            {entry.paragraphs.map((paragraph) => <p>{paragraph.split(/(SiO2)/g).map((part) => part === 'SiO2' ? <span>SiO<sub>2</sub></span> : part)}</p>)}
+            {entry.paragraphs.map((paragraph) => <p><FormattedText text={paragraph} /></p>)}
           </div>
         </article>
       ))}
