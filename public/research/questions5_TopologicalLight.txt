@@ -1,5 +1,8 @@
 Topological light
 
-Placeholder longer explanation for a Research Questions entry connected to the Programmable lattices home-page snapshot.
+Photocurrents driven in materials by femtosecond-scale ultrafast light pulses often decay on sub-picosecond timescales due to momentum relaxing scattering with phonons. This change in currents leads to emission of electromagnetic radiation in the inverse-picosecond (or terahertz) spectral range. An unsurprising yet useful result is that the vectorial currents described above emit vectorial light fields in the terahertz spectral range. More surprising is that hyperspectral imaging reveals these fields to be a new and unusual form of toroidal light pulse, which carries skyrmion topology that evolves in space and time. While not truly topologically protected by an energy gap in the same sense as electronic states in condensed matter, these topological light pulses have proven to be highly robust against small perturbations. Furthermore, they have many degrees of freedom and higher-order modes in which for high-capacity information encoding. We are particularly exploring applications in materials science, where this form of terahertz light offers exciting new opportunities to probe difficult-to-access out-of-plane collective excitations (such as phonons and magnons) in van der Waals materials, along with toroidal modes and nonradiating dynamic anapole configurations.
+
+Image: Azimuthal (left) and radial (right) electric field modes that yield magnetic and electric Néel-type skyrmions, respectively. The full 3D toroidal structure of the tunable topological light pulses is revealed by (hyperspectral) imaging of the terahertz waveform in space and time.
+
 
 Home snippet: Vectorial light-matter responses emit light modes with nontrivial topology, including toroidal "flying doughnuts".
