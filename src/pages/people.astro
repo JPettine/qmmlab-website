@@ -25,8 +25,8 @@ const formatName = (fileStem: string) => fileStem.replace(/([a-z])([A-Z])/g, '$1
 const positionRank = (position: string) => {
   if (/professor|principal investigator|\bpi\b|faculty/i.test(position)) return 0;
   if (/post[- ]?doc|postdoctoral/i.test(position)) return 1;
-  if (/graduate|ph\.?d|doctoral/i.test(position)) return 2;
   if (/undergraduate|bachelor/i.test(position)) return 3;
+  if (/graduate|ph\.?d|doctoral/i.test(position)) return 2;
   return 4;
 };
 
