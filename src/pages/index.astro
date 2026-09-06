@@ -51,6 +51,12 @@ const highlightSlides = existsSync(highlightsDir)
 
 
 const newsDir = join(process.cwd(), 'public', 'news');
+const parseNewsDate = (fileName: string) => {
+  const match = fileName.match(/^(\d{4})(\d{2})(\d{2})/);
+  if (!match) return null;
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return Number.isNaN(date.getTime()) ? null : date;
+};
 const newsItems = existsSync(newsDir)
   ? readdirSync(newsDir)
       .filter((fileName) => fileName.toLowerCase().endsWith('.txt'))
@@ -60,13 +66,16 @@ const newsItems = existsSync(newsDir)
           .map((line) => line.trim())
           .filter(Boolean);
 
+        const date = parseNewsDate(fileName);
         return {
           id: parse(fileName).name,
           snippet: lines[0] ?? '',
+          date,
+          dateLabel: date?.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }) ?? '',
         };
       })
       .filter((item) => item.snippet)
-      .sort((a, b) => b.id.localeCompare(a.id))
+      .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0) || b.id.localeCompare(a.id))
   : [];
 
 const researchDir = join(process.cwd(), 'public', 'research');
@@ -139,9 +148,10 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
         <p class="eyebrow" id="home-news-title">News</p>
         <div class="home-news-list">
           {newsItems.map((item) => (
-            <article class="home-news-item">
-              <p>{item.snippet}</p>
-            </article>
+            <a class="home-news-item" href={`/news/#${item.id}`}>
+              {item.dateLabel && <time datetime={item.date?.toISOString().slice(0, 10)}>{item.dateLabel}</time>}
+              <p><FormattedText text={item.snippet} /></p>
+            </a>
           ))}
         </div>
         <a class="home-news-more" href="/news/">See more...</a>
@@ -264,8 +274,25 @@ const researchSlides = (snapshotImages.length > 0 ? snapshotImages : snapshotPla
   }
 
   .home-news-item {
+    display: grid;
+    gap: 0.2rem;
     border-bottom: 1px solid var(--line);
     padding-bottom: 0.75rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .home-news-item:hover p,
+  .home-news-item:focus-visible p {
+    color: var(--accent-deep);
+  }
+
+  .home-news-item time {
+    color: var(--accent-deep);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .home-news-item p {

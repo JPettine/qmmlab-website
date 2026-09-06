@@ -2,8 +2,15 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, parse } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FormattedText from '../components/FormattedText.astro';
 
 const newsDir = join(process.cwd(), 'public', 'news');
+const parseNewsDate = (fileName: string) => {
+  const match = fileName.match(/^(\d{4})(\d{2})(\d{2})/);
+  if (!match) return null;
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return Number.isNaN(date.getTime()) ? null : date;
+};
 const newsItems = existsSync(newsDir)
   ? readdirSync(newsDir)
       .filter((fileName) => fileName.toLowerCase().endsWith('.txt'))
@@ -13,14 +20,17 @@ const newsItems = existsSync(newsDir)
           .map((line) => line.trim())
           .filter(Boolean);
 
+        const date = parseNewsDate(fileName);
         return {
           id: parse(fileName).name,
           snippet,
           body: bodyLines.join('\n'),
+          date,
+          dateLabel: date?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) ?? '',
         };
       })
       .filter((item) => item.snippet)
-      .sort((a, b) => b.id.localeCompare(a.id))
+      .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0) || b.id.localeCompare(a.id))
   : [];
 ---
 
@@ -29,20 +39,21 @@ const newsItems = existsSync(newsDir)
     <div class="section-heading">
       <p class="eyebrow" id="news-archive-title">Lab News</p>
     </div>
-    <div class="panel news-panel">
-      {newsItems.length > 0 ? (
-        <div class="news-list">
+    {newsItems.length > 0 ? (
+      <div class="news-list">
           {newsItems.map((item) => (
-            <article class="news-entry">
+          <div class="news-item">
+            {item.dateLabel && <time datetime={item.date?.toISOString().slice(0, 10)}>{item.dateLabel}</time>}
+            <article class="panel news-entry" id={item.id}>
               <h2>{item.snippet}</h2>
-              {item.body && item.body.split('\n').map((paragraph) => <p>{paragraph}</p>)}
+              {item.body && item.body.split('\n').map((paragraph) => <p><FormattedText text={paragraph} /></p>)}
             </article>
+          </div>
           ))}
-        </div>
-      ) : (
-        <p class="lede">Add <code>.txt</code> files to <code>public/news/</code>. The first line appears as the Home page snippet; subsequent lines appear as the full News page post.</p>
-      )}
-    </div>
+      </div>
+    ) : (
+      <div class="panel"><p class="lede">Add <code>.txt</code> files to <code>public/news/</code>. The first line appears as the Home page snippet; subsequent lines appear as the full News page post.</p></div>
+    )}
   </section>
 </BaseLayout>
 
@@ -52,20 +63,26 @@ const newsItems = existsSync(newsDir)
     gap: 1.5rem;
   }
 
-  .news-panel,
   .news-list {
     display: grid;
     gap: 1.25rem;
   }
 
-  .news-entry {
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 1.25rem;
+  .news-item {
+    display: grid;
+    gap: 0.45rem;
   }
 
-  .news-entry:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
+  .news-item time {
+    color: var(--accent-deep);
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .news-entry {
+    scroll-margin-top: 7rem;
   }
 
   .news-entry h2 {

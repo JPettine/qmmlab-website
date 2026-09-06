@@ -8,6 +8,11 @@ type TextToken = {
   value: string;
 };
 
+type Segment = {
+  text: string;
+  href?: string;
+};
+
 const { text } = Astro.props;
 
 const renderMathTokens = (math: string) => math
@@ -21,15 +26,35 @@ const renderMathTokens = (math: string) => math
     return { type: marker === '_' ? 'sub' : 'sup', value };
   });
 
-const tokens = text
+const renderText = (value: string) => value
   .split(/(\$[^$]+\$)/g)
   .filter(Boolean)
   .flatMap((part): TextToken[] => {
     if (part.startsWith('$') && part.endsWith('$')) return renderMathTokens(part.slice(1, -1));
     return [{ type: 'text', value: part }];
   });
+
+const segments: Segment[] = [];
+const markdownLinkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+|\/[^\s)]*|#[^\s)]*)\)/gi;
+let lastIndex = 0;
+
+for (const match of text.matchAll(markdownLinkPattern)) {
+  const matchIndex = match.index ?? 0;
+  if (matchIndex > lastIndex) segments.push({ text: text.slice(lastIndex, matchIndex) });
+  segments.push({ text: match[1], href: match[2] });
+  lastIndex = matchIndex + match[0].length;
+}
+
+if (lastIndex < text.length) segments.push({ text: text.slice(lastIndex) });
+if (segments.length === 0) segments.push({ text });
 ---
 
-{tokens.map((token) => (
-  token.type === 'sub' ? <sub>{token.value}</sub> : token.type === 'sup' ? <sup>{token.value}</sup> : token.value
+{segments.map((segment) => (
+  segment.href ? (
+    <a href={segment.href} target={segment.href.startsWith('http') ? '_blank' : undefined} rel={segment.href.startsWith('http') ? 'noreferrer' : undefined}>
+      {renderText(segment.text).map((token) => token.type === 'sub' ? <sub>{token.value}</sub> : token.type === 'sup' ? <sup>{token.value}</sup> : token.value)}
+    </a>
+  ) : renderText(segment.text).map((token) => (
+    token.type === 'sub' ? <sub>{token.value}</sub> : token.type === 'sup' ? <sup>{token.value}</sup> : token.value
+  ))
 ))}
